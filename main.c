@@ -1,6 +1,6 @@
 #include <emscripten.h>
 
-#define BOARD_SIZE 6
+#define BOARD_SIZE 3
 
 EMSCRIPTEN_KEEPALIVE
 int add(int a, int b) { return a + b; }
