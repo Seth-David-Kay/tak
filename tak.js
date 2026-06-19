@@ -37,11 +37,7 @@ function renderSquares() {
 }
 
 function updateBoard(board_tile) {
-    let board_tile_id = board_tile.id.at(-1);
-    // call update board function from c
-    let resulting_stack = Module._updateBoard(board_tile_id);
-    console.log(resulting_stack);
-    // make visual changes based on the bitmap returned
+
 }
 
 function determineSquareColor(board_tile, i) {

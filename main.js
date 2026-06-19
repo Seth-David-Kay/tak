@@ -1603,7 +1603,6 @@ function checkIncomingModuleAPI() {
 // Imports from the Wasm binary.
 var _init = Module['_init'] = makeInvalidEarlyAccess('_init');
 var _getBoardSize = Module['_getBoardSize'] = makeInvalidEarlyAccess('_getBoardSize');
-var _updateBoard = Module['_updateBoard'] = makeInvalidEarlyAccess('_updateBoard');
 var _fflush = makeInvalidEarlyAccess('_fflush');
 var _emscripten_stack_get_end = makeInvalidEarlyAccess('_emscripten_stack_get_end');
 var _emscripten_stack_get_base = makeInvalidEarlyAccess('_emscripten_stack_get_base');
@@ -1620,7 +1619,6 @@ var wasmMemory = makeInvalidEarlyAccess('wasmMemory');
 function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['init'] != 'undefined', 'missing Wasm export: init');
   assert(typeof wasmExports['getBoardSize'] != 'undefined', 'missing Wasm export: getBoardSize');
-  assert(typeof wasmExports['updateBoard'] != 'undefined', 'missing Wasm export: updateBoard');
   assert(typeof wasmExports['fflush'] != 'undefined', 'missing Wasm export: fflush');
   assert(typeof wasmExports['emscripten_stack_get_end'] != 'undefined', 'missing Wasm export: emscripten_stack_get_end');
   assert(typeof wasmExports['emscripten_stack_get_base'] != 'undefined', 'missing Wasm export: emscripten_stack_get_base');
@@ -1634,7 +1632,6 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['__indirect_function_table'] != 'undefined', 'missing Wasm export: __indirect_function_table');
   _init = Module['_init'] = createExportWrapper('init', 0);
   _getBoardSize = Module['_getBoardSize'] = createExportWrapper('getBoardSize', 0);
-  _updateBoard = Module['_updateBoard'] = createExportWrapper('updateBoard', 1);
   _fflush = createExportWrapper('fflush', 1);
   _emscripten_stack_get_end = wasmExports['emscripten_stack_get_end'];
   _emscripten_stack_get_base = wasmExports['emscripten_stack_get_base'];
