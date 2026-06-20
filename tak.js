@@ -26,8 +26,11 @@ function renderSquares() {
 
     boardArray.forEach((board_tile, i) => {
         board_tile.addEventListener("click", function() {
-            console.log(board_tile);
-            updateBoard(board_tile);
+            updateBoardLeftClick(board_tile);
+        });
+        board_tile.addEventListener("contextmenu", function(e) {
+            e.preventDefault();
+            updateBoardRightClick(board_tile);
         });
     });
 
@@ -36,8 +39,13 @@ function renderSquares() {
     });
 }
 
-function updateBoard(board_tile) {
+function updateBoardLeftClick(board_tile) {
+    Module._updateBoardLeftClick(board_tile.id.at(-1));
+    // Logic for updating board tile visually
+}
 
+function updateBoardRightClick(board_tile) {
+    Module._updateBoardRightClick(board_tile.id.at(-1));
 }
 
 function determineSquareColor(board_tile, i) {

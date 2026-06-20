@@ -28,79 +28,112 @@ typedef struct {
 	int capstones;
 } Reserve;
 
-static Tile* board = NULL;
+static Tile *board = NULL;
 static Tile move_buffer = {};
-static int move_direction = 0;
+static int move_direction = -1;
+static int moving_to_tile_id = -1; // what tile is currently being placed on
+static int origin_moving_tile_id = -1; // what tile tiles were taken from
 static Reserve reserve[2] = {}; // reserve[0] is white
 static const int STONE_COUNTS[] = {0, 0, 0, 0, 15, 21, 30, 40, 50};
 static const int CAPSTONE_COUNTS[] = {0, 0, 0, 0, 0, 1, 1, 2, 2};
 
 EMSCRIPTEN_KEEPALIVE
-void init(){
-	board = (Tile*)calloc(BOARD_SIZE*BOARD_SIZE, sizeof(Tile));
-	for (int i = 0; i < BOARD_SIZE*BOARD_SIZE; i++) board[i].id = i;
-	reserve[0].stones    = STONE_COUNTS[BOARD_SIZE];
-    reserve[1].stones    = STONE_COUNTS[BOARD_SIZE];
-    reserve[0].capstones = CAPSTONE_COUNTS[BOARD_SIZE];
-    reserve[1].capstones = CAPSTONE_COUNTS[BOARD_SIZE];
-    move_buffer.id = -1;
+void init() {
+	board = (Tile *)calloc(BOARD_SIZE * BOARD_SIZE, sizeof(Tile));
+	for (int i = 0; i < BOARD_SIZE * BOARD_SIZE; i++)
+		board[i].id = i;
+	reserve[0].stones = STONE_COUNTS[BOARD_SIZE];
+	reserve[1].stones = STONE_COUNTS[BOARD_SIZE];
+	reserve[0].capstones = CAPSTONE_COUNTS[BOARD_SIZE];
+	reserve[1].capstones = CAPSTONE_COUNTS[BOARD_SIZE];
+	move_buffer.id = -1;
 }
 
 EMSCRIPTEN_KEEPALIVE
 int getBoardSize() { return BOARD_SIZE; }
 
-void pop(int tile_id){
-	Tile tile = board[tile_id];
+void pop(Tile *tile) {
 	// checks
-		// can not pop if no pieces left on tile
-		// can not pop if trying to pickup from two tiles at once:
-		// if buffer has something in it AND buffer.tile != tile
-	if ((tile.count == 0) || (move_buffer.count != 0 && move_buffer.id != tile.id)) return;
+	// can not pop if no pieces left on tile
+	// can not pop if trying to pickup from two tiles at once, aka
+	// if buffer has something in it AND buffer origin tile != tile
+	if ((tile->count == 0) ||
+			(move_buffer.count != 0 && origin_moving_tile_id != tile->id))
+		return;
 	// set move buffer at move buffer count = tile at tile count
-	int tile_stack_bit = getBit(tile.stack, tile.count);
-	move_buffer.stack = setBit(move_buffer.stack, move_buffer.count, tile_stack_bit);
-	tile.count -= 1; move_buffer.count += 1;
+	int tile_stack_bit = getBit(tile->stack, tile->count - 1);
+	move_buffer.stack =
+			setBit(move_buffer.stack, move_buffer.count, tile_stack_bit);
+	tile->count -= 1;
+	move_buffer.count += 1;
 }
 
-void push(int tile_id){
-	Tile tile = board[tile_id];
+void push(Tile *tile) {
 	// checks
-		// can not push if buffer count is 0
-		// can not push if the tile top is not flat
-		// (TODO) can not push if tile is not in move direction if already part of a move
-			// using move_direction
-	if (move_buffer.count == 0 || tile.top != FLAT) return;
+	// can not push if buffer count is 0
+	// can not push if the tile top is not flat
+	// (TODO) can not push if tile is not in move direction if already part of a
+	// move using move_direction
+	if (move_buffer.count == 0 || tile->top != FLAT)
+		return;
 
 	// if move == none, fine. else, see if moving in same direction
 
 	// Push top of buffer stack onto top of tile stack, adjust counts accordingly
-	int buffer_stack_bit = getBit(move_buffer.stack, move_buffer.count);
-	tile.stack = setBit(tile.stack, tile.count, buffer_stack_bit);
-	tile.count += 1; move_buffer.count -= 1;
+	int buffer_stack_bit = getBit(move_buffer.stack, move_buffer.count - 1);
+	tile->stack = setBit(tile->stack, tile->count, buffer_stack_bit);
+	tile->count += 1;
+	move_buffer.count -= 1;
 }
 
-// end turn: if direction != none & buffer.count == 0 (moved already & nothing being held)
+// end turn: if direction != none & buffer.count == 0 (moved already & nothing
+// being held)
 
 // reset:
-	// reset buffer if buffer != 0 or direction != none, reset
-	// reset: store copy of board, override when end turn is clicked
+// reset buffer if buffer != 0 or direction != none, reset
+// reset: store copy of board, override when end turn is clicked
 
 // Soft set, returns new value, does not edit original value
-uint64_t setBit(uint64_t bitmap, int position, int set_value){
-	if (set_value != 1 && set_value != 0) return bitmap;
-    return (bitmap & ~((uint64_t)1 << position)) | ((uint64_t)set_value << position);
+uint64_t setBit(uint64_t bitmap, int position, int set_value) {
+	if (set_value != 1 && set_value != 0)
+		return bitmap;
+	return (bitmap & ~((uint64_t)1 << position)) |
+				 ((uint64_t)set_value << position);
 }
 
-uint64_t getBit(uint64_t bitmap, int position){
+uint64_t getBit(uint64_t bitmap, int position) {
 	return (bitmap >> position) & 1;
 }
 
 void printBitmap(uint64_t val) {
-    for (int i = 63; i >= 0; i--) {
-        putchar((val >> i) & 1 ? '1' : '0');
-        // Optional: space every 8 bits for readability
-        if (i % 8 == 0 && i != 0)
-            putchar(' ');
-    }
-    putchar('\n');
+	for (int i = 63; i >= 0; i--) {
+		putchar((val >> i) & 1 ? '1' : '0');
+		// Optional: space every 8 bits for readability
+		if (i % 8 == 0 && i != 0)
+			putchar(' ');
+	}
+	putchar('\n');
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t getTileStack(int tile_id) { return board[tile_id].stack; }
+
+EMSCRIPTEN_KEEPALIVE
+void updateBoardLeftClick(int tile_id) {
+	Tile *tile = &board[tile_id];
+	if (origin_moving_tile_id < 0) {
+		origin_moving_tile_id = tile_id;
+		pop(tile);
+	}
+	return;
+}
+
+EMSCRIPTEN_KEEPALIVE
+void updateBoardRightClick(int tile_id) {
+	Tile *tile = &board[tile_id];
+	// tests
+	tile->stack = setBit(tile->stack, tile->count, 1);
+	tile->count += 1;
+	// end tests
+	return;
 }

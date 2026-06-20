@@ -1603,6 +1603,9 @@ function checkIncomingModuleAPI() {
 // Imports from the Wasm binary.
 var _init = Module['_init'] = makeInvalidEarlyAccess('_init');
 var _getBoardSize = Module['_getBoardSize'] = makeInvalidEarlyAccess('_getBoardSize');
+var _getTileStack = Module['_getTileStack'] = makeInvalidEarlyAccess('_getTileStack');
+var _updateBoardLeftClick = Module['_updateBoardLeftClick'] = makeInvalidEarlyAccess('_updateBoardLeftClick');
+var _updateBoardRightClick = Module['_updateBoardRightClick'] = makeInvalidEarlyAccess('_updateBoardRightClick');
 var _fflush = makeInvalidEarlyAccess('_fflush');
 var _emscripten_stack_get_end = makeInvalidEarlyAccess('_emscripten_stack_get_end');
 var _emscripten_stack_get_base = makeInvalidEarlyAccess('_emscripten_stack_get_base');
@@ -1619,6 +1622,9 @@ var wasmMemory = makeInvalidEarlyAccess('wasmMemory');
 function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['init'] != 'undefined', 'missing Wasm export: init');
   assert(typeof wasmExports['getBoardSize'] != 'undefined', 'missing Wasm export: getBoardSize');
+  assert(typeof wasmExports['getTileStack'] != 'undefined', 'missing Wasm export: getTileStack');
+  assert(typeof wasmExports['updateBoardLeftClick'] != 'undefined', 'missing Wasm export: updateBoardLeftClick');
+  assert(typeof wasmExports['updateBoardRightClick'] != 'undefined', 'missing Wasm export: updateBoardRightClick');
   assert(typeof wasmExports['fflush'] != 'undefined', 'missing Wasm export: fflush');
   assert(typeof wasmExports['emscripten_stack_get_end'] != 'undefined', 'missing Wasm export: emscripten_stack_get_end');
   assert(typeof wasmExports['emscripten_stack_get_base'] != 'undefined', 'missing Wasm export: emscripten_stack_get_base');
@@ -1632,6 +1638,9 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['__indirect_function_table'] != 'undefined', 'missing Wasm export: __indirect_function_table');
   _init = Module['_init'] = createExportWrapper('init', 0);
   _getBoardSize = Module['_getBoardSize'] = createExportWrapper('getBoardSize', 0);
+  _getTileStack = Module['_getTileStack'] = createExportWrapper('getTileStack', 1);
+  _updateBoardLeftClick = Module['_updateBoardLeftClick'] = createExportWrapper('updateBoardLeftClick', 1);
+  _updateBoardRightClick = Module['_updateBoardRightClick'] = createExportWrapper('updateBoardRightClick', 1);
   _fflush = createExportWrapper('fflush', 1);
   _emscripten_stack_get_end = wasmExports['emscripten_stack_get_end'];
   _emscripten_stack_get_base = wasmExports['emscripten_stack_get_base'];
