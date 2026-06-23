@@ -1607,6 +1607,8 @@ var _getTileStack = Module['_getTileStack'] = makeInvalidEarlyAccess('_getTileSt
 var _placeStone = Module['_placeStone'] = makeInvalidEarlyAccess('_placeStone');
 var _updateBoardLeftClick = Module['_updateBoardLeftClick'] = makeInvalidEarlyAccess('_updateBoardLeftClick');
 var _updateBoardRightClick = Module['_updateBoardRightClick'] = makeInvalidEarlyAccess('_updateBoardRightClick');
+var _reset = Module['_reset'] = makeInvalidEarlyAccess('_reset');
+var _endTurn = Module['_endTurn'] = makeInvalidEarlyAccess('_endTurn');
 var _returnTileCount = Module['_returnTileCount'] = makeInvalidEarlyAccess('_returnTileCount');
 var _returnTopPiece = Module['_returnTopPiece'] = makeInvalidEarlyAccess('_returnTopPiece');
 var _returnTileStack = Module['_returnTileStack'] = makeInvalidEarlyAccess('_returnTileStack');
@@ -1631,6 +1633,8 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['placeStone'] != 'undefined', 'missing Wasm export: placeStone');
   assert(typeof wasmExports['updateBoardLeftClick'] != 'undefined', 'missing Wasm export: updateBoardLeftClick');
   assert(typeof wasmExports['updateBoardRightClick'] != 'undefined', 'missing Wasm export: updateBoardRightClick');
+  assert(typeof wasmExports['reset'] != 'undefined', 'missing Wasm export: reset');
+  assert(typeof wasmExports['endTurn'] != 'undefined', 'missing Wasm export: endTurn');
   assert(typeof wasmExports['returnTileCount'] != 'undefined', 'missing Wasm export: returnTileCount');
   assert(typeof wasmExports['returnTopPiece'] != 'undefined', 'missing Wasm export: returnTopPiece');
   assert(typeof wasmExports['returnTileStack'] != 'undefined', 'missing Wasm export: returnTileStack');
@@ -1652,6 +1656,8 @@ function assignWasmExports(wasmExports) {
   _placeStone = Module['_placeStone'] = createExportWrapper('placeStone', 3);
   _updateBoardLeftClick = Module['_updateBoardLeftClick'] = createExportWrapper('updateBoardLeftClick', 1);
   _updateBoardRightClick = Module['_updateBoardRightClick'] = createExportWrapper('updateBoardRightClick', 1);
+  _reset = Module['_reset'] = createExportWrapper('reset', 0);
+  _endTurn = Module['_endTurn'] = createExportWrapper('endTurn', 0);
   _returnTileCount = Module['_returnTileCount'] = createExportWrapper('returnTileCount', 1);
   _returnTopPiece = Module['_returnTopPiece'] = createExportWrapper('returnTopPiece', 1);
   _returnTileStack = Module['_returnTileStack'] = createExportWrapper('returnTileStack', 1);

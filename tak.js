@@ -133,14 +133,17 @@ function updateBoard() {
 }
 
 document.querySelector(".reset-btn").addEventListener("click", () => {
-    // Module._resetGame();
-    current_turn = 0;
+    active_tile?.classList.remove("active_tile");
     active_tile = null;
+    Module._reset();
     updateBoard();
 });
 
 document.querySelector(".end-turn-btn").addEventListener("click", () => {
+    active_tile?.classList.remove("active_tile");
+    active_tile = null;
     current_turn = current_turn === 0 ? 1 : 0;
+    Module._endTurn();
     updateBoard();
 });
 

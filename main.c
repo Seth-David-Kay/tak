@@ -189,6 +189,16 @@ void updateBoardRightClick(int tile_id) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+void reset(){
+
+}
+
+EMSCRIPTEN_KEEPALIVE
+void endTurn(){
+
+}
+
+EMSCRIPTEN_KEEPALIVE
 int returnTileCount(int tile_id){
 	return board[tile_id].count;
 }
