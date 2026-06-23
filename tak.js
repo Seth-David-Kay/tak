@@ -121,54 +121,75 @@ function getBoardSize(){
 function updateBoard() {
     const sideLength = getBoardSize();
     const boardSize = sideLength * sideLength;
-
+    const bufferCount = Module._getBufferCount();
+    // get some buffer information
+    let targetHoverTileId = -1;
+    if (bufferCount > 0) {
+        const movingToId = Module._getMovingToTileId();
+        if (movingToId >= 0) {
+            targetHoverTileId = movingToId;
+        } else if (active_tile) {
+            targetHoverTileId = parseInt(active_tile.id.split("-")[1]);
+        }
+    }
+    // draw board
     for (let tileId = 0; tileId < boardSize; tileId++) {
         const tileElement = document.getElementById(`boardTile-${tileId}`);
 
-        // Remove old pieces
         tileElement.replaceChildren();
 
         const count = Module._returnTileCount(tileId);
-
-        if (count === 0) continue;
-
         const stack = Module._returnTileStack(tileId);
         const topType = Module._returnTopPiece(tileId);
 
-        for (let level = 0; level < count; level++) {
-            const piece = document.createElement("div");
+        if (count > 0) {
+            for (let level = 0; level < count; level++) {
+                const piece = document.createElement("div");
+                piece.classList.add("piece");
 
-            piece.classList.add("piece");
+                const colorBit = (stack >> BigInt(level)) & 1n;
+                piece.classList.add(colorBit === 0n ? "white-piece" : "black-piece");
 
-            // Color
-            const colorBit = (stack >> BigInt(level)) & 1n;
-
-            if (colorBit === 0n) {
-                piece.classList.add("white-piece");
-            } else {
-                piece.classList.add("black-piece");
-            }
-
-            // Shape
-            if (level === count - 1) {
-                if (topType === 1) { // STANDING
-                    piece.classList.add("standing-piece");
-                }
-                else if (topType === 2) { // CAP
-                    piece.classList.add("capstone-piece");
-                }
-                else { // FLAT
+                if (level === count - 1) {
+                    if (topType === 1) piece.classList.add("standing-piece");
+                    else if (topType === 2) piece.classList.add("capstone-piece");
+                    else piece.classList.add("flat-piece");
+                } else {
                     piece.classList.add("flat-piece");
                 }
-            } else {
-                piece.classList.add("flat-piece");
+
+                const offset = level * 8;
+                piece.style.top = `calc(50% - ${offset}px)`;
+
+                tileElement.appendChild(piece);
             }
+        }
+        // draw buffer
+        if (tileId === targetHoverTileId && bufferCount > 0) {
+            const buffer_stack = Module._getBufferStack();
+            const buffer_top = Module._getBufferTop();
 
-            // Stack pieces upward
-            const offset = level * 8;
-            piece.style.top = `calc(50% - ${offset}px)`;
+            for (let buffer_level = 0; buffer_level < bufferCount; buffer_level++) {
+                const piece = document.createElement("div");
+                piece.classList.add("piece", "in-buffer");
 
-            tileElement.appendChild(piece);
+                const colorBit = (buffer_stack >> BigInt(buffer_level)) & 1n;
+                piece.classList.add(colorBit === 0n ? "white-piece" : "black-piece");
+
+                if (buffer_level === bufferCount - 1) {
+                    if (buffer_top === 1) piece.classList.add("standing-piece");
+                    else if (buffer_top === 2) piece.classList.add("capstone-piece");
+                    else piece.classList.add("flat-piece");
+                } else {
+                    piece.classList.add("flat-piece");
+                }
+
+                const totalLevel = count + buffer_level;
+                const offset = totalLevel * 8;
+                piece.style.top = `calc(50% - ${offset}px)`;
+
+                tileElement.appendChild(piece);
+            }
         }
     }
     updatePlayerPanel();

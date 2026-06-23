@@ -131,6 +131,7 @@ void placeStone(int tile_id, int color, int type){
 
 EMSCRIPTEN_KEEPALIVE
 void updateBoardLeftClick(int tile_id) {
+	printf("%d\n", tile_id);
 	// if left click & nothing, pop
 	// if left click & selected &! moved, pop if valid move (four touching selected)
 	// if left click & selected & moved, pop if valid move (four touching moved)
@@ -205,6 +206,21 @@ void reset(){
 EMSCRIPTEN_KEEPALIVE
 void endTurn(){
 
+}
+
+EMSCRIPTEN_KEEPALIVE
+int getMovingToTileId(){
+	return moving_to_tile_id;
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t getBufferStack(){
+	return move_buffer.stack;
+}
+
+EMSCRIPTEN_KEEPALIVE
+int getBufferTop(){
+	return move_buffer.top;
 }
 
 EMSCRIPTEN_KEEPALIVE
