@@ -115,6 +115,7 @@ void printBitmap(uint64_t val) {
 
 EMSCRIPTEN_KEEPALIVE
 void placeStone(int tile_id, int color, int type){
+	printf("%d\n", tile_id);
 	Tile *tile = &board[tile_id];
 	if (tile->count > 0) return;
 	tile->top = type;

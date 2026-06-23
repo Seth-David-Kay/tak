@@ -52,17 +52,17 @@ function updateBoardLeftClick(board_tile) {
     if (active_tile) {
         // placing stones
         if (active_tile === stoneSelector) {
-            Module._placeStone(board_tile, current_turn, 0);
+            Module._placeStone(tileId, current_turn, 0);
             active_tile?.classList.remove("active_tile");
             active_tile = null;
         }
         else if (active_tile === standingStoneSelector) {
-            Module._placeStone(board_tile, current_turn, 1);
+            Module._placeStone(tileId, current_turn, 1);
             active_tile?.classList.remove("active_tile");
             active_tile = null;
         }
         else if (active_tile === capstoneSelector) {
-            Module._placeStone(board_tile, current_turn, 2);
+            Module._placeStone(tileId, current_turn, 2);
             active_tile?.classList.remove("active_tile");
             active_tile = null;
         }
@@ -230,7 +230,7 @@ function updatePlayerPanel() {
         blackStatus.className = "black-info active-turn-text";
 
         stonePreview.className = "piece flat-piece black-piece";
-        standingStonePreview.className = "piece standing-piece black-piece"; // Added
+        standingStonePreview.className = "piece standing-piece black-piece";
         capPreview.className = "piece capstone-piece black-piece";
     }
 
