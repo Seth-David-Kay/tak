@@ -50,9 +50,6 @@ void init() {
 	move_buffer.id = -1;
 }
 
-EMSCRIPTEN_KEEPALIVE
-int getBoardSize() { return BOARD_SIZE; }
-
 void pop(Tile *tile) {
 	// checks
 	// can not pop if no pieces left on tile
@@ -115,9 +112,6 @@ void printBitmap(uint64_t val) {
 	}
 	putchar('\n');
 }
-
-EMSCRIPTEN_KEEPALIVE
-uint64_t getTileStack(int tile_id) { return board[tile_id].stack; }
 
 EMSCRIPTEN_KEEPALIVE
 void placeStone(int tile_id, int color, int type){
@@ -199,6 +193,9 @@ void endTurn(){
 }
 
 EMSCRIPTEN_KEEPALIVE
+int getBoardSize() { return BOARD_SIZE; }
+
+EMSCRIPTEN_KEEPALIVE
 int returnTileCount(int tile_id){
 	return board[tile_id].count;
 }
@@ -213,6 +210,12 @@ EMSCRIPTEN_KEEPALIVE
 uint64_t returnTileStack(int tile_id){
 	return board[tile_id].stack;
 }
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t getTileStack(int tile_id) { return board[tile_id].stack; }
+
+EMSCRIPTEN_KEEPALIVE
+int getBufferCount() { return move_buffer.count; }
 
 EMSCRIPTEN_KEEPALIVE
 // 0 is white, 1 is return capstone count

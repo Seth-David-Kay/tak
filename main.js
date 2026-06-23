@@ -1602,16 +1602,17 @@ function checkIncomingModuleAPI() {
 
 // Imports from the Wasm binary.
 var _init = Module['_init'] = makeInvalidEarlyAccess('_init');
-var _getBoardSize = Module['_getBoardSize'] = makeInvalidEarlyAccess('_getBoardSize');
-var _getTileStack = Module['_getTileStack'] = makeInvalidEarlyAccess('_getTileStack');
 var _placeStone = Module['_placeStone'] = makeInvalidEarlyAccess('_placeStone');
 var _updateBoardLeftClick = Module['_updateBoardLeftClick'] = makeInvalidEarlyAccess('_updateBoardLeftClick');
 var _updateBoardRightClick = Module['_updateBoardRightClick'] = makeInvalidEarlyAccess('_updateBoardRightClick');
 var _reset = Module['_reset'] = makeInvalidEarlyAccess('_reset');
 var _endTurn = Module['_endTurn'] = makeInvalidEarlyAccess('_endTurn');
+var _getBoardSize = Module['_getBoardSize'] = makeInvalidEarlyAccess('_getBoardSize');
 var _returnTileCount = Module['_returnTileCount'] = makeInvalidEarlyAccess('_returnTileCount');
 var _returnTopPiece = Module['_returnTopPiece'] = makeInvalidEarlyAccess('_returnTopPiece');
 var _returnTileStack = Module['_returnTileStack'] = makeInvalidEarlyAccess('_returnTileStack');
+var _getTileStack = Module['_getTileStack'] = makeInvalidEarlyAccess('_getTileStack');
+var _getBufferCount = Module['_getBufferCount'] = makeInvalidEarlyAccess('_getBufferCount');
 var _returnPiecesLeft = Module['_returnPiecesLeft'] = makeInvalidEarlyAccess('_returnPiecesLeft');
 var _fflush = makeInvalidEarlyAccess('_fflush');
 var _emscripten_stack_get_end = makeInvalidEarlyAccess('_emscripten_stack_get_end');
@@ -1628,16 +1629,17 @@ var wasmMemory = makeInvalidEarlyAccess('wasmMemory');
 
 function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['init'] != 'undefined', 'missing Wasm export: init');
-  assert(typeof wasmExports['getBoardSize'] != 'undefined', 'missing Wasm export: getBoardSize');
-  assert(typeof wasmExports['getTileStack'] != 'undefined', 'missing Wasm export: getTileStack');
   assert(typeof wasmExports['placeStone'] != 'undefined', 'missing Wasm export: placeStone');
   assert(typeof wasmExports['updateBoardLeftClick'] != 'undefined', 'missing Wasm export: updateBoardLeftClick');
   assert(typeof wasmExports['updateBoardRightClick'] != 'undefined', 'missing Wasm export: updateBoardRightClick');
   assert(typeof wasmExports['reset'] != 'undefined', 'missing Wasm export: reset');
   assert(typeof wasmExports['endTurn'] != 'undefined', 'missing Wasm export: endTurn');
+  assert(typeof wasmExports['getBoardSize'] != 'undefined', 'missing Wasm export: getBoardSize');
   assert(typeof wasmExports['returnTileCount'] != 'undefined', 'missing Wasm export: returnTileCount');
   assert(typeof wasmExports['returnTopPiece'] != 'undefined', 'missing Wasm export: returnTopPiece');
   assert(typeof wasmExports['returnTileStack'] != 'undefined', 'missing Wasm export: returnTileStack');
+  assert(typeof wasmExports['getTileStack'] != 'undefined', 'missing Wasm export: getTileStack');
+  assert(typeof wasmExports['getBufferCount'] != 'undefined', 'missing Wasm export: getBufferCount');
   assert(typeof wasmExports['returnPiecesLeft'] != 'undefined', 'missing Wasm export: returnPiecesLeft');
   assert(typeof wasmExports['fflush'] != 'undefined', 'missing Wasm export: fflush');
   assert(typeof wasmExports['emscripten_stack_get_end'] != 'undefined', 'missing Wasm export: emscripten_stack_get_end');
@@ -1651,16 +1653,17 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['memory'] != 'undefined', 'missing Wasm export: memory');
   assert(typeof wasmExports['__indirect_function_table'] != 'undefined', 'missing Wasm export: __indirect_function_table');
   _init = Module['_init'] = createExportWrapper('init', 0);
-  _getBoardSize = Module['_getBoardSize'] = createExportWrapper('getBoardSize', 0);
-  _getTileStack = Module['_getTileStack'] = createExportWrapper('getTileStack', 1);
   _placeStone = Module['_placeStone'] = createExportWrapper('placeStone', 3);
   _updateBoardLeftClick = Module['_updateBoardLeftClick'] = createExportWrapper('updateBoardLeftClick', 1);
   _updateBoardRightClick = Module['_updateBoardRightClick'] = createExportWrapper('updateBoardRightClick', 1);
   _reset = Module['_reset'] = createExportWrapper('reset', 0);
   _endTurn = Module['_endTurn'] = createExportWrapper('endTurn', 0);
+  _getBoardSize = Module['_getBoardSize'] = createExportWrapper('getBoardSize', 0);
   _returnTileCount = Module['_returnTileCount'] = createExportWrapper('returnTileCount', 1);
   _returnTopPiece = Module['_returnTopPiece'] = createExportWrapper('returnTopPiece', 1);
   _returnTileStack = Module['_returnTileStack'] = createExportWrapper('returnTileStack', 1);
+  _getTileStack = Module['_getTileStack'] = createExportWrapper('getTileStack', 1);
+  _getBufferCount = Module['_getBufferCount'] = createExportWrapper('getBufferCount', 0);
   _returnPiecesLeft = Module['_returnPiecesLeft'] = createExportWrapper('returnPiecesLeft', 2);
   _fflush = createExportWrapper('fflush', 1);
   _emscripten_stack_get_end = wasmExports['emscripten_stack_get_end'];
