@@ -1604,8 +1604,12 @@ function checkIncomingModuleAPI() {
 var _init = Module['_init'] = makeInvalidEarlyAccess('_init');
 var _getBoardSize = Module['_getBoardSize'] = makeInvalidEarlyAccess('_getBoardSize');
 var _getTileStack = Module['_getTileStack'] = makeInvalidEarlyAccess('_getTileStack');
+var _placeStone = Module['_placeStone'] = makeInvalidEarlyAccess('_placeStone');
 var _updateBoardLeftClick = Module['_updateBoardLeftClick'] = makeInvalidEarlyAccess('_updateBoardLeftClick');
 var _updateBoardRightClick = Module['_updateBoardRightClick'] = makeInvalidEarlyAccess('_updateBoardRightClick');
+var _return_tile_count = Module['_return_tile_count'] = makeInvalidEarlyAccess('_return_tile_count');
+var _return_top_piece = Module['_return_top_piece'] = makeInvalidEarlyAccess('_return_top_piece');
+var _return_tile_stack = Module['_return_tile_stack'] = makeInvalidEarlyAccess('_return_tile_stack');
 var _fflush = makeInvalidEarlyAccess('_fflush');
 var _emscripten_stack_get_end = makeInvalidEarlyAccess('_emscripten_stack_get_end');
 var _emscripten_stack_get_base = makeInvalidEarlyAccess('_emscripten_stack_get_base');
@@ -1623,8 +1627,12 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['init'] != 'undefined', 'missing Wasm export: init');
   assert(typeof wasmExports['getBoardSize'] != 'undefined', 'missing Wasm export: getBoardSize');
   assert(typeof wasmExports['getTileStack'] != 'undefined', 'missing Wasm export: getTileStack');
+  assert(typeof wasmExports['placeStone'] != 'undefined', 'missing Wasm export: placeStone');
   assert(typeof wasmExports['updateBoardLeftClick'] != 'undefined', 'missing Wasm export: updateBoardLeftClick');
   assert(typeof wasmExports['updateBoardRightClick'] != 'undefined', 'missing Wasm export: updateBoardRightClick');
+  assert(typeof wasmExports['return_tile_count'] != 'undefined', 'missing Wasm export: return_tile_count');
+  assert(typeof wasmExports['return_top_piece'] != 'undefined', 'missing Wasm export: return_top_piece');
+  assert(typeof wasmExports['return_tile_stack'] != 'undefined', 'missing Wasm export: return_tile_stack');
   assert(typeof wasmExports['fflush'] != 'undefined', 'missing Wasm export: fflush');
   assert(typeof wasmExports['emscripten_stack_get_end'] != 'undefined', 'missing Wasm export: emscripten_stack_get_end');
   assert(typeof wasmExports['emscripten_stack_get_base'] != 'undefined', 'missing Wasm export: emscripten_stack_get_base');
@@ -1639,8 +1647,12 @@ function assignWasmExports(wasmExports) {
   _init = Module['_init'] = createExportWrapper('init', 0);
   _getBoardSize = Module['_getBoardSize'] = createExportWrapper('getBoardSize', 0);
   _getTileStack = Module['_getTileStack'] = createExportWrapper('getTileStack', 1);
+  _placeStone = Module['_placeStone'] = createExportWrapper('placeStone', 3);
   _updateBoardLeftClick = Module['_updateBoardLeftClick'] = createExportWrapper('updateBoardLeftClick', 1);
   _updateBoardRightClick = Module['_updateBoardRightClick'] = createExportWrapper('updateBoardRightClick', 1);
+  _return_tile_count = Module['_return_tile_count'] = createExportWrapper('return_tile_count', 1);
+  _return_top_piece = Module['_return_top_piece'] = createExportWrapper('return_top_piece', 1);
+  _return_tile_stack = Module['_return_tile_stack'] = createExportWrapper('return_tile_stack', 1);
   _fflush = createExportWrapper('fflush', 1);
   _emscripten_stack_get_end = wasmExports['emscripten_stack_get_end'];
   _emscripten_stack_get_base = wasmExports['emscripten_stack_get_base'];

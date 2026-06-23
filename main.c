@@ -9,6 +9,7 @@
 void printBitmap(uint64_t);
 uint64_t setBit(uint64_t, int, int);
 uint64_t getBit(uint64_t, int);
+int checkIfValidMove(int, int);
 
 typedef enum {
 	FLAT = 0,
@@ -119,16 +120,65 @@ EMSCRIPTEN_KEEPALIVE
 uint64_t getTileStack(int tile_id) { return board[tile_id].stack; }
 
 EMSCRIPTEN_KEEPALIVE
+void placeStone(int tile_id, int color, int type){
+	Tile *tile = &board[tile_id];
+	if (tile->count > 0) return;
+	tile->top = type;
+	tile->stack = setBit(tile->stack, 0, color);
+	tile->count += 1;
+}
+
+EMSCRIPTEN_KEEPALIVE
 void updateBoardLeftClick(int tile_id) {
+	// if left click & nothing, pop
+	// if left click & selected &! moved, pop if valid move (four touching selected)
+	// if left click & selected & moved, pop if valid move (four touching moved)
 	Tile *tile = &board[tile_id];
 	if (origin_moving_tile_id < 0) {
 		origin_moving_tile_id = tile_id;
 		pop(tile);
 	}
+	else if (moving_to_tile_id < 0){
+	 	if (checkIfValidMove(origin_moving_tile_id, tile_id) == 0){
+	 		move_direction = 0;
+	 		moving_to_tile_id = tile_id;
+	 		push(tile);
+	 	}else{ // not a valid move
+	 		return;
+	 	}
+	}
+	else {
+		if (checkIfValidMove(moving_to_tile_id, tile_id)){
+			if (1) { // check if valid move direction
+				moving_to_tile_id = tile_id;
+				push(tile);
+			}else{
+				return;
+			}
+		}else{
+			return;
+		}
+	}
+	printBitmap(move_buffer.stack);
 	return;
 }
 
+// Returns 0 if false, 1 if true
+int checkIfValidMove(int tile_id_from, int tile_id_to){
+	int from_row = floor(tile_id_from / BOARD_SIZE);
+	int from_col = tile_id_from % BOARD_SIZE;
+	int to_row = floor(tile_id_to / BOARD_SIZE);
+	int to_col = tile_id_to % BOARD_SIZE;
+	if (from_row == to_row && ((from_col == (to_col + 1)) || (from_col == (to_col - 1))))
+		return 1;
+	if (from_col == to_col && ((from_row == (to_row) + 1)) || (from_row == (to_row) + 1))
+		return 1;
+	return 0;
+}
+
 EMSCRIPTEN_KEEPALIVE
+// to implement later if I want, right click rn is not going to do anything
+// 	other than test
 void updateBoardRightClick(int tile_id) {
 	Tile *tile = &board[tile_id];
 	// tests
@@ -136,4 +186,20 @@ void updateBoardRightClick(int tile_id) {
 	tile->count += 1;
 	// end tests
 	return;
+}
+
+EMSCRIPTEN_KEEPALIVE
+int return_tile_count(int tile_id){
+	return board[tile_id].count;
+}
+
+
+EMSCRIPTEN_KEEPALIVE
+int return_top_piece(int tile_id){
+	return board[tile_id].top;
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t return_tile_stack(int tile_id){
+	return board[tile_id].stack;
 }

@@ -13,7 +13,7 @@ $(OUT): $(SRC)
 	$(EMCC) $(SRC) -o $(OUT) \
 	-s MODULARIZE=1 \
 	-s EXPORT_ES6=1 \
-	-s EXPORTED_FUNCTIONS='["_getBoardSize", "_init", "_updateBoardLeftClick", "_updateBoardRightClick", "_getTileStack"]' \
+	-s EXPORTED_FUNCTIONS='["_getBoardSize", "_init", "_updateBoardLeftClick", "_updateBoardRightClick", "_getTileStack", "_return_tile_count", "_return_tile_stack", "_return_top_piece", "_placeStone"]' \
 	-s EXPORTED_RUNTIME_METHODS='["cwrap"]'
 
 run: all
