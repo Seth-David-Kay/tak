@@ -54,7 +54,7 @@ function updateBoardLeftClick(board_tile) {
 }
 
 function updateBoardRightClick(board_tile) {
-    Module._placeStone(board_tile.id.split("-")[1], 0, 0);
+    Module._placeStone(board_tile.id.split("-")[1], 0, 1);
     updateBoard();
     // Module._updateBoardRightClick(board_tile.id.split("-")[1]);
 }
@@ -109,24 +109,22 @@ function updateBoard() {
 
             // Shape
             if (level === count - 1) {
-                switch (topType) {
-                    case 1: // STANDING
-                        piece.classList.add("standing-piece");
-                        break;
-
-                    case 2: // CAP
-                        piece.classList.add("capstone-piece");
-                        break;
-
-                    default: // FLAT
-                        piece.classList.add("flat-piece");
+                if (topType === 1) { // STANDING
+                    piece.classList.add("standing-piece");
+                }
+                else if (topType === 2) { // CAP
+                    piece.classList.add("capstone-piece");
+                }
+                else { // FLAT
+                    piece.classList.add("flat-piece");
                 }
             } else {
                 piece.classList.add("flat-piece");
             }
 
             // Stack pieces upward
-            piece.style.bottom = `${level * 8}px`;
+            const offset = level * 8;
+            piece.style.top = `calc(50% - ${offset}px)`;
 
             tileElement.appendChild(piece);
         }

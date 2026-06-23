@@ -17,11 +17,11 @@ div.boardTile {
 }
 
 .light-tile {
-    background-color: #FBFFF3;
+    background: #9aaab5;
 }
 
 .dark-tile {
-    background-color: #000000;
+    background: #93c165;
 }
 
 .active_tile {
@@ -31,27 +31,42 @@ div.boardTile {
 
 .piece {
     position: absolute;
-    left: 10%;
-    border: 1px solid #222;
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    border: 2px solid rgba(0,0,0,.35);
     box-sizing: border-box;
-}
 
-.flat-piece {
-    width: 80%;
-    height: 12%;
-    border-radius: 2px;
-}
-
-.standing-piece {
-    width: 30%;
-    height: 45%;
-    left: 35%;
-    border-radius: 2px;
+    box-shadow: 0 3px 6px rgba(0,0,0,.25);
 }
 
 .capstone-piece {
-    width: 45%;
+    width: 58%;
     aspect-ratio: 1;
-    left: 27.5%;
     border-radius: 50%;
+}
+
+.standing-piece {
+    width: 50%;
+    height: 18%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.flat-piece {
+    width: 50%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+}
+
+.white-piece {
+    background-color: #FBFFF3;
+}
+
+.black-piece {
+    background-color: #222222;
 }
