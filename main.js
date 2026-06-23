@@ -1605,6 +1605,7 @@ var _init = Module['_init'] = makeInvalidEarlyAccess('_init');
 var _placeStone = Module['_placeStone'] = makeInvalidEarlyAccess('_placeStone');
 var _updateBoardLeftClick = Module['_updateBoardLeftClick'] = makeInvalidEarlyAccess('_updateBoardLeftClick');
 var _updateBoardRightClick = Module['_updateBoardRightClick'] = makeInvalidEarlyAccess('_updateBoardRightClick');
+var _canPlayerSelect = Module['_canPlayerSelect'] = makeInvalidEarlyAccess('_canPlayerSelect');
 var _reset = Module['_reset'] = makeInvalidEarlyAccess('_reset');
 var _endTurn = Module['_endTurn'] = makeInvalidEarlyAccess('_endTurn');
 var _getBoardSize = Module['_getBoardSize'] = makeInvalidEarlyAccess('_getBoardSize');
@@ -1632,6 +1633,7 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['placeStone'] != 'undefined', 'missing Wasm export: placeStone');
   assert(typeof wasmExports['updateBoardLeftClick'] != 'undefined', 'missing Wasm export: updateBoardLeftClick');
   assert(typeof wasmExports['updateBoardRightClick'] != 'undefined', 'missing Wasm export: updateBoardRightClick');
+  assert(typeof wasmExports['canPlayerSelect'] != 'undefined', 'missing Wasm export: canPlayerSelect');
   assert(typeof wasmExports['reset'] != 'undefined', 'missing Wasm export: reset');
   assert(typeof wasmExports['endTurn'] != 'undefined', 'missing Wasm export: endTurn');
   assert(typeof wasmExports['getBoardSize'] != 'undefined', 'missing Wasm export: getBoardSize');
@@ -1656,6 +1658,7 @@ function assignWasmExports(wasmExports) {
   _placeStone = Module['_placeStone'] = createExportWrapper('placeStone', 3);
   _updateBoardLeftClick = Module['_updateBoardLeftClick'] = createExportWrapper('updateBoardLeftClick', 1);
   _updateBoardRightClick = Module['_updateBoardRightClick'] = createExportWrapper('updateBoardRightClick', 1);
+  _canPlayerSelect = Module['_canPlayerSelect'] = createExportWrapper('canPlayerSelect', 2);
   _reset = Module['_reset'] = createExportWrapper('reset', 0);
   _endTurn = Module['_endTurn'] = createExportWrapper('endTurn', 0);
   _getBoardSize = Module['_getBoardSize'] = createExportWrapper('getBoardSize', 0);

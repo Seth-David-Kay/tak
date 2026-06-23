@@ -6,6 +6,7 @@ Module._init();
 let current_turn = 0; // 0 is white
 let selectedPiece = -1; // -1 is nothing, 0 if flat, 1 is standing, 2 is capstone
 let active_tile = null;
+let started_move = 0; // 0 false, 1 true
 const stoneSelector = document.getElementById("stone-selector");
 const standingStoneSelector = document.getElementById("standing-stone-selector");
 const capstoneSelector = document.getElementById("capstone-selector");
@@ -54,17 +55,20 @@ function updateBoardLeftClick(board_tile) {
         if (active_tile === stoneSelector) {
             Module._placeStone(tileId, current_turn, 0);
             active_tile?.classList.remove("active_tile");
-            active_tile = null;
+            board_tile.classList.add("active_tile");
+            active_tile = board_tile;
         }
         else if (active_tile === standingStoneSelector) {
             Module._placeStone(tileId, current_turn, 1);
             active_tile?.classList.remove("active_tile");
-            active_tile = null;
+            board_tile.classList.add("active_tile");
+            active_tile = board_tile;
         }
         else if (active_tile === capstoneSelector) {
             Module._placeStone(tileId, current_turn, 2);
             active_tile?.classList.remove("active_tile");
-            active_tile = null;
+            board_tile.classList.add("active_tile");
+            active_tile = board_tile;
         }
 
         else if (board_tile !== active_tile) {
@@ -83,8 +87,10 @@ function updateBoardLeftClick(board_tile) {
             Module._updateBoardLeftClick(tileId);
         }
     } else {
-        board_tile.classList.add("active_tile");
-        active_tile = board_tile;
+        if (Module._canPlayerSelect(tileId, current_turn)){
+            board_tile.classList.add("active_tile");
+            active_tile = board_tile;
+        }
     }
     updateBoard();
 }
@@ -168,40 +174,56 @@ function updateBoard() {
     updatePlayerPanel();
 }
 
+function isTurnOver() {
+    return started_move === 1 && Module._getBufferCount() === 0;
+}
+
 document.querySelector(".reset-btn").addEventListener("click", () => {
     active_tile?.classList.remove("active_tile");
     active_tile = null;
+    started_move = 0;
+    selectedPiece = -1;
     Module._reset();
     updateBoard();
 });
 
 document.querySelector(".end-turn-btn").addEventListener("click", () => {
-    active_tile?.classList.remove("active_tile");
-    active_tile = null;
-    current_turn = current_turn === 0 ? 1 : 0;
-    Module._endTurn();
-    updateBoard();
+    if (isTurnOver){
+        active_tile?.classList.remove("active_tile");
+        active_tile = null;
+        started_move = 0;
+        selectedPiece = -1;
+        current_turn = current_turn === 0 ? 1 : 0;
+        Module._endTurn();
+        updateBoard();
+    }
 });
 
 stoneSelector.addEventListener("click", () => {
-    selectedPiece = 0;
-    active_tile?.classList.remove("active_tile");
-    stoneSelector.classList.add("active_tile");
-    active_tile = stoneSelector;
+    if (!started_move) {
+        selectedPiece = 0;
+        active_tile?.classList.remove("active_tile");
+        stoneSelector.classList.add("active_tile");
+        active_tile = stoneSelector;
+    }
 });
 
 standingStoneSelector.addEventListener("click", () => {
-    selectedPiece = 1;
-    active_tile?.classList.remove("active_tile");
-    standingStoneSelector.classList.add("active_tile");
-    active_tile = standingStoneSelector;
+    if (!started_move) {
+        selectedPiece = 1;
+        active_tile?.classList.remove("active_tile");
+        standingStoneSelector.classList.add("active_tile");
+        active_tile = standingStoneSelector;
+    }
 });
 
 capstoneSelector.addEventListener("click", () => {
-    selectedPiece = 2;
-    active_tile?.classList.remove("active_tile");
-    capstoneSelector.classList.add("active_tile");
-    active_tile = capstoneSelector;
+    if (!started_move) {
+        selectedPiece = 2;
+        active_tile?.classList.remove("active_tile");
+        capstoneSelector.classList.add("active_tile");
+        active_tile = capstoneSelector;
+    }
 });
 
 

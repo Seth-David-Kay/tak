@@ -13,7 +13,7 @@ $(OUT): $(SRC)
 	$(EMCC) $(SRC) -o $(OUT) \
 	-s MODULARIZE=1 \
 	-s EXPORT_ES6=1 \
-	-s EXPORTED_FUNCTIONS='["_getBoardSize", "_init", "_updateBoardLeftClick", "_updateBoardRightClick", "_getTileStack", "_returnTileCount", "_returnTileStack", "_returnTopPiece", "_placeStone", "_returnPiecesLeft", "_endTurn", "_reset", "_getBufferCount"]' \
+	-s EXPORTED_FUNCTIONS='["_getBoardSize", "_init", "_updateBoardLeftClick", "_updateBoardRightClick", "_getTileStack", "_returnTileCount", "_returnTileStack", "_returnTopPiece", "_placeStone", "_returnPiecesLeft", "_endTurn", "_reset", "_getBufferCount", "_canPlayerSelect"]' \
 	-s EXPORTED_RUNTIME_METHODS='["cwrap"]'
 
 run: all

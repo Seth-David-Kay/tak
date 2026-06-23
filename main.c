@@ -55,14 +55,18 @@ void pop(Tile *tile) {
 	// can not pop if no pieces left on tile
 	// can not pop if trying to pickup from two tiles at once, aka
 	// if buffer has something in it AND buffer origin tile != tile
-	if ((tile->count == 0) ||
-			(move_buffer.count != 0 && origin_moving_tile_id != tile->id))
+	if ((tile->count == 0) || (move_buffer.count != 0 && origin_moving_tile_id != tile->id))
 		return;
+
 	// set move buffer at move buffer count = tile at tile count
 	int tile_stack_bit = getBit(tile->stack, tile->count - 1);
-	move_buffer.stack =
-			setBit(move_buffer.stack, move_buffer.count, tile_stack_bit);
+	move_buffer.stack = setBit(move_buffer.stack, move_buffer.count, tile_stack_bit);
+	// if first piece in move buffer, save top information
+	if (move_buffer.count == 0){
+		move_buffer.top = tile->top;
+	}
 	tile->count -= 1;
+	tile->top = FLAT;
 	move_buffer.count += 1;
 }
 
@@ -74,12 +78,15 @@ void push(Tile *tile) {
 	// move using move_direction
 	if (move_buffer.count == 0 || tile->top != FLAT)
 		return;
-
 	// if move == none, fine. else, see if moving in same direction
 
 	// Push top of buffer stack onto top of tile stack, adjust counts accordingly
 	int buffer_stack_bit = getBit(move_buffer.stack, move_buffer.count - 1);
 	tile->stack = setBit(tile->stack, tile->count, buffer_stack_bit);
+	// placing top move buffer piece onto tile stack
+	if (move_buffer.count == 1){
+		tile->top = move_buffer.top;
+	}
 	tile->count += 1;
 	move_buffer.count -= 1;
 }
@@ -115,7 +122,6 @@ void printBitmap(uint64_t val) {
 
 EMSCRIPTEN_KEEPALIVE
 void placeStone(int tile_id, int color, int type){
-	printf("%d\n", tile_id);
 	Tile *tile = &board[tile_id];
 	if (tile->count > 0) return;
 	tile->top = type;
@@ -130,11 +136,12 @@ void updateBoardLeftClick(int tile_id) {
 	// if left click & selected & moved, pop if valid move (four touching moved)
 	Tile *tile = &board[tile_id];
 	if (origin_moving_tile_id < 0) {
+		if (tile->top != FLAT) return;
 		origin_moving_tile_id = tile_id;
 		pop(tile);
 	}
 	else if (moving_to_tile_id < 0){
-	 	if (checkIfValidMove(origin_moving_tile_id, tile_id) == 0){
+	 	if (checkIfValidMove(origin_moving_tile_id, tile_id)){
 	 		move_direction = 0;
 	 		moving_to_tile_id = tile_id;
 	 		push(tile);
@@ -181,6 +188,13 @@ void updateBoardRightClick(int tile_id) {
 	tile->count += 1;
 	// end tests
 	return;
+}
+
+EMSCRIPTEN_KEEPALIVE
+int canPlayerSelect(int tile_id, int player){
+	Tile *tile = &board[tile_id];
+	if (tile->count == 0) return 0;
+	return getBit(tile->stack, 0) == player;
 }
 
 EMSCRIPTEN_KEEPALIVE
