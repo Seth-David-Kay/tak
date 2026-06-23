@@ -6,7 +6,27 @@
         <script type="module" src="tak.js" defer></script>
     </head>
     <body>
+        <div class="buttons">
+            <button class="btn reset-btn">Reset</button>
+            <button class="btn end-turn-btn">End Turn</button>
+        </div>
+
         <div class="board"></div>
-        <div class="piece_chooser"></div>
+
+        <div class="picker">
+            <div class="white-info" id="white-status">White's Turn</div>
+
+            <div class="stones select-box" id="stone-selector">
+                <span class="count-label" id="stone-count">21</span>
+                <div class="piece flat-piece" id="stone-preview"></div>
+            </div>
+
+            <div class="capstones select-box" id="capstone-selector">
+                <span class="count-label" id="capstone-count">1</span>
+                <div class="piece capstone-piece" id="capstone-preview"></div>
+            </div>
+
+            <div class="black-info" id="black-status">Black Player</div>
+        </div>
     </body>
 </html>

@@ -35,7 +35,7 @@ static int move_direction = -1;
 static int moving_to_tile_id = -1; // what tile is currently being placed on
 static int origin_moving_tile_id = -1; // what tile tiles were taken from
 static Reserve reserve[2] = {}; // reserve[0] is white
-static const int STONE_COUNTS[] = {0, 0, 0, 0, 15, 21, 30, 40, 50};
+static const int STONE_COUNTS[] = {0, 0, 0, 10, 15, 21, 30, 40, 50};
 static const int CAPSTONE_COUNTS[] = {0, 0, 0, 0, 0, 1, 1, 2, 2};
 
 EMSCRIPTEN_KEEPALIVE
@@ -189,17 +189,29 @@ void updateBoardRightClick(int tile_id) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int return_tile_count(int tile_id){
+int returnTileCount(int tile_id){
 	return board[tile_id].count;
 }
 
 
 EMSCRIPTEN_KEEPALIVE
-int return_top_piece(int tile_id){
+int returnTopPiece(int tile_id){
 	return board[tile_id].top;
 }
 
 EMSCRIPTEN_KEEPALIVE
-uint64_t return_tile_stack(int tile_id){
+uint64_t returnTileStack(int tile_id){
 	return board[tile_id].stack;
+}
+
+EMSCRIPTEN_KEEPALIVE
+// 0 is white, 1 is return capstone count
+int returnPiecesLeft(int player, int capstones){
+	if (player > 1 || player < 0) return -1;
+	if (capstones) {
+		return reserve[player].capstones;
+	}
+	else {
+		return reserve[player].stones;
+	}
 }

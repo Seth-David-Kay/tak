@@ -1,9 +1,89 @@
+.btn {
+    background-color: #f0f0f0;
+    border: 2px solid #000;
+    padding: 8px 16px;
+    font-family: monospace;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background-color: #ddd;
+}
+
+.btn:active {
+    background-color: #ccc;
+}
+
+.select-box {
+    position: relative;
+    cursor: pointer;
+}
+
+.count-label {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-size: 1.5vmin;
+    font-family: sans-serif;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.active-turn-text {
+    font-weight: bold;
+    color: #000;
+    text-decoration: underline;
+}
+
+.inactive-turn-text {
+    color: #888;
+    text-decoration: none;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+    gap: 2%;
+    padding: 0 0.5%;
+    padding-bottom: 0.5%;
+}
+
+.picker {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+    gap: 2%;
+    padding: 0 0.5%;
+    padding-top: 0.5%;
+}
+
+.stones, .capstones {
+    width: 6.5vmin;
+    height: 6.5vmin;
+    border: 3px solid #000;
+}
+
+.white-info {
+}
+
+.black-info {
+}
+
 div.board {
     width: 90vmin;
     height: 90vmin;
     border: 5px solid #000;
     margin: auto;
-    margin-top: 5vmin;
     display: grid;
     box-sizing: border-box;
 }

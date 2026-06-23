@@ -3,10 +3,10 @@ import createModule from "./main.js";
 const Module = await createModule();
 
 Module._init();
-renderSquares();
-updateBoard();
 let active_tile = null;
 let current_turn = 0; // 0 is white
+renderSquares();
+updateBoard();
 
 function renderSquares() {
     const board = document.querySelector(".board");
@@ -86,12 +86,12 @@ function updateBoard() {
         // Remove old pieces
         tileElement.replaceChildren();
 
-        const count = Module._return_tile_count(tileId);
+        const count = Module._returnTileCount(tileId);
 
         if (count === 0) continue;
 
-        const stack = Module._return_tile_stack(tileId);
-        const topType = Module._return_top_piece(tileId);
+        const stack = Module._returnTileStack(tileId);
+        const topType = Module._returnTopPiece(tileId);
 
         for (let level = 0; level < count; level++) {
             const piece = document.createElement("div");
@@ -129,4 +129,53 @@ function updateBoard() {
             tileElement.appendChild(piece);
         }
     }
+    updatePlayerPanel();
+}
+
+document.querySelector(".reset-btn").addEventListener("click", () => {
+    // Module._resetGame();
+    current_turn = 0;
+    active_tile = null;
+    updateBoard();
+});
+
+document.querySelector(".end-turn-btn").addEventListener("click", () => {
+    current_turn = current_turn === 0 ? 1 : 0;
+    updateBoard();
+});
+
+
+function updatePlayerPanel() {
+    const whiteStatus = document.getElementById("white-status");
+    const blackStatus = document.getElementById("black-status");
+    const stonePreview = document.getElementById("stone-preview");
+    const capPreview = document.getElementById("capstone-preview");
+
+    if (current_turn === 0) {
+        whiteStatus.textContent = "White's Turn";
+        whiteStatus.className = "white-info active-turn-text";
+
+        blackStatus.textContent = "Black Player";
+        blackStatus.className = "black-info inactive-turn-text";
+
+        stonePreview.className = "piece flat-piece white-piece";
+        capPreview.className = "piece capstone-piece white-piece";
+    } else {
+        whiteStatus.textContent = "White Player";
+        whiteStatus.className = "white-info inactive-turn-text";
+
+        blackStatus.textContent = "Black's Turn";
+        blackStatus.className = "black-info active-turn-text";
+
+        stonePreview.className = "piece flat-piece black-piece";
+        capPreview.className = "piece capstone-piece black-piece";
+    }
+
+    // Update Piece Counts Here
+    // call module.getpiececounts and set our counts equal to those
+    let remainingStones = Module._returnPiecesLeft(current_turn, 0);
+    let remainingCapstones = Module._returnPiecesLeft(current_turn, 1);
+
+    document.getElementById("stone-count").textContent = remainingStones;
+    document.getElementById("capstone-count").textContent = remainingCapstones;
 }
