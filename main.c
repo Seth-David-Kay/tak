@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-#define BOARD_SIZE 3
+static int BOARD_SIZE = 3;
 
 void printBitmap(uint64_t);
 uint64_t setBit(uint64_t, int, int);
@@ -169,7 +169,9 @@ void updateBoardLeftClick(int tile_id) {
 		pop(tile);
 	}
 	else if (tile_id == origin_moving_tile_id && moving_to_tile_id < 0){
-		pop(tile);
+		if (move_buffer.count != BOARD_SIZE){
+			pop(tile);
+		}
 	}
 	else if (moving_to_tile_id < 0){
 	 	if (checkIfValidMove(origin_moving_tile_id, tile_id)){
