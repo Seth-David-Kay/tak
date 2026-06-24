@@ -70,10 +70,12 @@ function updateBoardLeftClick(board_tile) {
 
         else if (board_tile !== active_tile) {
             if (Module._getBufferCount() === 0) {
-                active_tile?.classList.remove("active_tile");
-                board_tile.classList.add("active_tile");
-                active_tile = board_tile;
-                Module._updateBoardLeftClick(tileId);
+                if (Module._canPlayerSelect(tileId, current_turn)){
+                    active_tile?.classList.remove("active_tile");
+                    board_tile.classList.add("active_tile");
+                    active_tile = board_tile;
+                    Module._updateBoardLeftClick(tileId);
+                }
             }
             else {
                 // moving buffer

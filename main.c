@@ -76,8 +76,12 @@ void push(Tile *tile) {
 	// can not push if the tile top is not flat
 	// (TODO) can not push if tile is not in move direction if already part of a
 	// move using move_direction
-	if (move_buffer.count == 0 || tile->top != FLAT)
-		return;
+	if (move_buffer.count == 0) return;
+	if (tile->count > 0){
+		if (tile->top == STANDING && move_buffer.count == 1 && move_buffer.top == CAP){
+			// (TODO) wall breaking
+		} else if (tile->top != FLAT) return;
+	}
 	// if move == none, fine. else, see if moving in same direction
 
 	// Push top of buffer stack onto top of tile stack, adjust counts accordingly
@@ -139,6 +143,9 @@ void updateBoardLeftClick(int tile_id) {
 		origin_moving_tile_id = tile_id;
 		pop(tile);
 	}
+	else if (tile_id == origin_moving_tile_id && moving_to_tile_id < 0){
+		pop(tile);
+	}
 	else if (moving_to_tile_id < 0){
 	 	if (checkIfValidMove(origin_moving_tile_id, tile_id)){
 	 		move_direction = 0; // (TODO) calculate direction
@@ -156,11 +163,8 @@ void updateBoardLeftClick(int tile_id) {
 			}else{
 				return;
 			}
-		}else{
-			return;
 		}
 	}
-	printBitmap(move_buffer.stack);
 	return;
 }
 
