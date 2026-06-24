@@ -192,7 +192,7 @@ int canMoveBufferTo(int tile_id) {
     return 0;
 }
 
-// 0=up, 1=down, 2=left, 3=right, -1=same tile
+// 0 = up, 1 = down, 2 = left, 3 = right, -1 = same tile
 int calculateDirection(int from_id, int to_id) {
     int from_row = from_id / BOARD_SIZE;
     int from_col = from_id % BOARD_SIZE;
