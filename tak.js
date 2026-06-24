@@ -158,6 +158,8 @@ function updateBoard() {
         const naturalPiecePx = tileWidth * 0.5;
         // edit minvisible toward 0.4 for more legible, toward 0.15 if more stay same
         const minVisible     = 0.15; // each piece must show at least 25% of itself
+        // adjust 0.6 up if default further from each other, down if default closer to each other
+        const maxStep    = naturalPiecePx * 0.3;
 
         let stepOffset, pieceScale;
 
@@ -166,17 +168,13 @@ function updateBoard() {
             pieceScale = 1;
         } else {
             // How much step do we get at natural piece size?
-            const naturalStep = (targetHeight - naturalPiecePx) / (totalPieces - 1);
+            const naturalStep = Math.min(maxStep, (targetHeight - naturalPiecePx) / (totalPieces - 1));
 
             if (naturalStep >= minVisible * naturalPiecePx) {
                 // Pieces are readable at natural size — spread to fill tile
                 pieceScale = 1;
                 stepOffset = naturalStep;
             } else {
-                // Too cramped to read — shrink pieces so step stays at minVisible * piecePx
-                // Solve: (targetHeight - piecePx) / (n-1) = minVisible * piecePx
-                // => targetHeight = piecePx * (1 + (n-1) * minVisible)
-                // => piecePx = targetHeight / (1 + (n-1) * minVisible)
                 const piecePx = targetHeight / (1 + (totalPieces - 1) * minVisible);
                 pieceScale = Math.max(0.1, piecePx / naturalPiecePx);
                 stepOffset = (targetHeight - piecePx) / (totalPieces - 1);
