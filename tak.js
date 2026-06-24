@@ -30,10 +30,6 @@ function renderSquares() {
     }
 
     boardArray.forEach((board_tile, i) => {
-        determineSquareColor(board_tile, i);
-    });
-
-    boardArray.forEach((board_tile, i) => {
         board_tile.addEventListener("click", function() {
             updateBoardLeftClick(board_tile);
         });
@@ -113,18 +109,6 @@ function updateBoardRightClick(board_tile) {
     // Module._placeStone(board_tile.id.split("-")[1], 1, 0);
     // updateBoard();
     // Module._updateBoardRightClick(board_tile.id.split("-")[1]);
-}
-
-function determineSquareColor(board_tile, i) {
-    const sideLength = getBoardSize();
-    const row = Math.floor(i / sideLength);
-    const col = i % sideLength;
-
-    if ((row + col) % 2 === 0) {
-        board_tile.classList.add("light-tile");
-    } else {
-        board_tile.classList.add("dark-tile");
-    }
 }
 
 function getBoardSize(){

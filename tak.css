@@ -1,7 +1,6 @@
 .stones-wrapper {
     position: relative;
     display: flex;
-    gap: 0.1%;
 }
 
 #stone-selector,
@@ -124,6 +123,7 @@ div.board {
     width: 85vmin;
     height: 85vmin;
     border: 5px solid #000;
+    border-radius: 5px;
     margin: auto;
     display: grid;
     box-sizing: border-box;
@@ -137,19 +137,14 @@ body {
 }
 
 div.boardTile {
+    box-sizing: border-box;
+    background: #CE9E64;
     width: 100%;
     height: 100%;
+    border: 2px solid #000;
 
     position: relative;
     overflow: visible;
-}
-
-.light-tile {
-    background: #9aaab5;
-}
-
-.dark-tile {
-    background: #93c165;
 }
 
 .active_tile {
