@@ -7,6 +7,7 @@ let current_turn = 0; // 0 is white
 let selectedPiece = -1; // -1 is nothing, 0 if flat, 1 is standing, 2 is capstone
 let active_tile = null;
 let started_move = 0; // 0 false, 1 true
+let total_moves_taken = 0;
 const stoneSelector = document.getElementById("stone-selector");
 const standingStoneSelector = document.getElementById("standing-stone-selector");
 const capstoneSelector = document.getElementById("capstone-selector");
@@ -58,6 +59,12 @@ function updateBoardLeftClick(board_tile) {
         }, { once: true });
         // now just return
         return;
+    }
+    if (total_moves_taken < 2){
+        if (Module._returnTileCount(tileId) === 0){
+            started_move = 1;
+            Module._placeStone(tileId, current_turn === 0 ? 1 : 0, 0);
+        } else { return; }
     }
     if (active_tile) {
         started_move = 1;
@@ -243,13 +250,14 @@ document.querySelector(".end-turn-btn").addEventListener("pointerdown", () => {
         started_move = 0;
         selectedPiece = -1;
         current_turn = current_turn === 0 ? 1 : 0;
+        total_moves_taken += 1;
         Module._endTurn();
         updateBoard();
     }
 });
 
 stoneSelector.addEventListener("pointerdown", () => {
-    if (!started_move && Module._getPiecesLeft(current_turn, 0) != 0) {
+    if (!started_move && Module._getPiecesLeft(current_turn, 0) != 0 && total_moves_taken >= 2) {
         selectedPiece = 0;
         active_tile?.classList.remove("active_tile");
         stoneSelector.classList.add("active_tile");
@@ -258,7 +266,7 @@ stoneSelector.addEventListener("pointerdown", () => {
 });
 
 standingStoneSelector.addEventListener("pointerdown", () => {
-    if (!started_move && Module._getPiecesLeft(current_turn, 0) != 0) {
+    if (!started_move && Module._getPiecesLeft(current_turn, 0) != 0 && total_moves_taken >= 2) {
         selectedPiece = 1;
         active_tile?.classList.remove("active_tile");
         standingStoneSelector.classList.add("active_tile");
@@ -267,7 +275,7 @@ standingStoneSelector.addEventListener("pointerdown", () => {
 });
 
 capstoneSelector.addEventListener("pointerdown", () => {
-    if (!started_move && Module._getPiecesLeft(current_turn, 1) != 0) {
+    if (!started_move && Module._getPiecesLeft(current_turn, 1) != 0 && total_moves_taken >= 2) {
         selectedPiece = 2;
         active_tile?.classList.remove("active_tile");
         capstoneSelector.classList.add("active_tile");
@@ -293,6 +301,7 @@ newGameBtn.addEventListener('click', () => {
     selectedPiece = -1;
     active_tile = null;
     started_move = 0;
+    total_moves_taken = 0;
     Module._init();
     renderSquares();
     updateBoard();
