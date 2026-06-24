@@ -30,7 +30,7 @@ function renderSquares() {
     }
 
     boardArray.forEach((board_tile, i) => {
-        board_tile.addEventListener("click", function() {
+        board_tile.addEventListener("pointerdown", function() {
             updateBoardLeftClick(board_tile);
         });
         board_tile.addEventListener("contextmenu", function(e) {
@@ -203,7 +203,7 @@ function isTurnOver() {
     return started_move === 1 && Module._getBufferCount() === 0;
 }
 
-document.querySelector(".reset-btn").addEventListener("click", () => {
+document.querySelector(".reset-btn").addEventListener("pointerdown", () => {
     active_tile?.classList.remove("active_tile");
     active_tile = null;
     started_move = 0;
@@ -212,7 +212,7 @@ document.querySelector(".reset-btn").addEventListener("click", () => {
     updateBoard();
 });
 
-document.querySelector(".end-turn-btn").addEventListener("click", () => {
+document.querySelector(".end-turn-btn").addEventListener("pointerdown", () => {
     if (isTurnOver()){
         active_tile?.classList.remove("active_tile");
         active_tile = null;
@@ -224,7 +224,7 @@ document.querySelector(".end-turn-btn").addEventListener("click", () => {
     }
 });
 
-stoneSelector.addEventListener("click", () => {
+stoneSelector.addEventListener("pointerdown", () => {
     if (!started_move && Module._getPiecesLeft(current_turn, 0) != 0) {
         selectedPiece = 0;
         active_tile?.classList.remove("active_tile");
@@ -233,7 +233,7 @@ stoneSelector.addEventListener("click", () => {
     }
 });
 
-standingStoneSelector.addEventListener("click", () => {
+standingStoneSelector.addEventListener("pointerdown", () => {
     if (!started_move && Module._getPiecesLeft(current_turn, 0) != 0) {
         selectedPiece = 1;
         active_tile?.classList.remove("active_tile");
@@ -242,7 +242,7 @@ standingStoneSelector.addEventListener("click", () => {
     }
 });
 
-capstoneSelector.addEventListener("click", () => {
+capstoneSelector.addEventListener("pointerdown", () => {
     if (!started_move && Module._getPiecesLeft(current_turn, 1) != 0) {
         selectedPiece = 2;
         active_tile?.classList.remove("active_tile");
