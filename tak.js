@@ -10,6 +10,7 @@ let started_move = 0; // 0 false, 1 true
 const stoneSelector = document.getElementById("stone-selector");
 const standingStoneSelector = document.getElementById("standing-stone-selector");
 const capstoneSelector = document.getElementById("capstone-selector");
+const endTurnButton = document.getElementById("end-turn-btn");
 renderSquares();
 updateBoard();
 
@@ -50,7 +51,13 @@ function renderSquares() {
 function updateBoardLeftClick(board_tile) {
     let tileId = board_tile.id.split("-")[1];
     if (isTurnOver()) {
-        // highlight turn over in a puling red
+        // highlight end turn in a pulsing red
+        if (endTurnButton.classList.contains('pulse-red')) return;
+        endTurnButton.classList.add('pulse-red');
+        endTurnButton.addEventListener('animationend', () => {
+            endTurnButton.classList.remove('pulse-red');
+        }, { once: true });
+        // now just return
         return;
     }
     if (active_tile) {
