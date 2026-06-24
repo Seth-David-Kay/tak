@@ -6,8 +6,10 @@
 #stone-selector,
 #standing-stone-selector,
 .capstones {
-    width: 6.5vmin;
-    height: 6.5vmin;
+    width: 12vw;
+    height: 12vw;
+    max-width: 60px;
+    max-height: 60px;
     border: 3px solid #000;
     position: relative;
     cursor: pointer;
@@ -31,6 +33,10 @@
     cursor: pointer;
     border-radius: 4px;
     transition: background 0.2s;
+    /* Mobile */
+    color: #000;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .turn-over {
@@ -72,7 +78,7 @@
     position: absolute;
     top: 2px;
     left: 4px;
-    font-size: 1.5vmin;
+    font-size: 12px;
     font-family: sans-serif;
     font-weight: bold;
     z-index: 10;
@@ -220,4 +226,89 @@ div.boardTile {
 
 .black-piece {
     background-color: #222222;
+}
+
+/* Mobile Specifics */
+@media (orientation: portrait) {
+    body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        box-sizing: border-box;
+        padding: 3vh 0;
+        justify-content: space-between;
+    }
+
+    .buttons {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4vw;
+        width: 100%;
+    }
+
+    .btn {
+        width: 35vw;
+        height: 8vh;
+        font-size: 4vw;
+        border-width: 0.8vw;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    div.board {
+        flex-grow: 0;
+        margin: auto 0;
+    }
+
+    .picker {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-evenly;
+        width: 100%;
+        padding: 0 4vw;
+        box-sizing: border-box;
+    }
+
+    .stones-wrapper {
+        display: flex;
+        flex-shrink: 0;
+    }
+
+    #stone-selector,
+    #standing-stone-selector,
+    .capstones {
+        width: 15vw;
+        height: 15vw;
+        max-width: 15vh;
+        max-height: 15vh;
+        border-width: 0.8vw;
+        flex-shrink: 0;
+    }
+
+    .piece {
+        border-width: 0.6vw;
+    }
+
+    .count-label {
+        font-size: 3.5vw;
+        top: 0.5vh;
+        left: 1.5vw;
+    }
+
+    .white-info, .black-info {
+        font-size: 3.5vw;
+        white-space: nowrap;
+        flex-shrink: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 22vw;
+        text-align: center;
+    }
 }
