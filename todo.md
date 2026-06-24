@@ -1,4 +1,4 @@
 - [x] add piece count logic
 - [ ] add game won logic
-- [ ] fix overflowing of stacks into the next tile that are too large
+- [x] fix overflowing of stacks into the next tile that are too large
 - [ ] add placing other person's tile on empty square as first turn (on first turn clicking an empty square will place a flat stone of other person's color and all other actions won't do anything)

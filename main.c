@@ -54,13 +54,6 @@ void init() {
 	reserve[1].capstones = CAPSTONE_COUNTS[BOARD_SIZE];
 	move_buffer.id = -1;
 	saveSnapshot();
-
-	// tests
-	Tile *tile = &board[0];
-	for (int i = 0; i < 25; i++){
-		tile->stack = setBit(tile->stack, i, i % 2);
-		tile->count += 1;
-	}
 }
 
 void pop(Tile *tile) {

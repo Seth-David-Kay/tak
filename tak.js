@@ -205,6 +205,7 @@ function updateBoard() {
 
                 const centerOffset = ((totalPieces - 1) / 2 - level) * stepOffset;
                 piece.style.top = `calc(50% + ${centerOffset}px)`;
+                if (pieceScale < 1) piece.style.border = 'none';
                 tileElement.appendChild(piece);
             }
         }
@@ -234,6 +235,7 @@ function updateBoard() {
                 const totalLevel   = count + buffer_level;
                 const centerOffset = ((totalPieces - 1) / 2 - totalLevel) * stepOffset;
                 piece.style.top = `calc(50% + ${centerOffset}px)`;
+                if (pieceScale < 1) piece.style.border = 'none';
                 tileElement.appendChild(piece);
             }
         }
