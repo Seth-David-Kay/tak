@@ -276,6 +276,11 @@ void endTurn(){
 }
 
 EMSCRIPTEN_KEEPALIVE
+void restartGame(){
+	endTurn();
+}
+
+EMSCRIPTEN_KEEPALIVE
 int getMovingToTileId(){
 	return moving_to_tile_id;
 }

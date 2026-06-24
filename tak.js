@@ -11,6 +11,8 @@ const stoneSelector = document.getElementById("stone-selector");
 const standingStoneSelector = document.getElementById("standing-stone-selector");
 const capstoneSelector = document.getElementById("capstone-selector");
 const endTurnButton = document.getElementById("end-turn-btn");
+const newGameBtn = document.getElementById('new-game-btn');
+const boardSizeInput = document.getElementById('board-size-input');
 renderSquares();
 updateBoard();
 
@@ -251,6 +253,27 @@ capstoneSelector.addEventListener("pointerdown", () => {
     }
 });
 
+newGameBtn.addEventListener('click', () => {
+    const newSize = parseInt(boardSizeInput.value, 10);
+
+    if (isNaN(newSize) || newSize < 3 || newSize > 8) {
+        newGameBtn.classList.remove('pulse-red');
+        void newGameBtn.offsetWidth;
+        newGameBtn.classList.add('pulse-red');
+        newGameBtn.addEventListener('animationend', () => {
+            newGameBtn.classList.remove('pulse-red');
+        }, { once: true });
+        return;
+    }
+    Module._restartGame();
+    Module._init();
+    let current_turn = 0;
+    let selectedPiece = -1;
+    let active_tile = null;
+    let started_move = 0;
+    renderSquares();
+    updateBoard();
+});
 
 function updatePlayerPanel() {
     const whiteStatus = document.getElementById("white-status");

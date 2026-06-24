@@ -1,3 +1,35 @@
+.board-size-picker {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 100;
+    width: 100px;
+}
+
+.board-size-input {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 1rem;
+    -moz-appearance: textfield;
+}
+
+.board-size-input::-webkit-outer-spin-button,
+.board-size-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.new-game-btn {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .stones-wrapper {
     position: relative;
     display: flex;
@@ -322,5 +354,28 @@ div.boardTile {
         text-overflow: ellipsis;
         max-width: 22vw;
         text-align: center;
+    }
+
+    .board-size-picker {
+        position: static;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 4vw;
+        width: 100%;
+        flex: 1;
+        box-sizing: border-box;
+    }
+
+    .board-size-input,
+    .new-game-btn {
+        width: 35vw;
+        height: 8vh;
+        font-size: 4vw;
+        border-width: 0.8vw;
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 }

@@ -1609,6 +1609,7 @@ var _updateBoardRightClick = Module['_updateBoardRightClick'] = makeInvalidEarly
 var _canPlayerSelect = Module['_canPlayerSelect'] = makeInvalidEarlyAccess('_canPlayerSelect');
 var _reset = Module['_reset'] = makeInvalidEarlyAccess('_reset');
 var _endTurn = Module['_endTurn'] = makeInvalidEarlyAccess('_endTurn');
+var _restartGame = Module['_restartGame'] = makeInvalidEarlyAccess('_restartGame');
 var _getMovingToTileId = Module['_getMovingToTileId'] = makeInvalidEarlyAccess('_getMovingToTileId');
 var _getBufferStack = Module['_getBufferStack'] = makeInvalidEarlyAccess('_getBufferStack');
 var _getBufferTop = Module['_getBufferTop'] = makeInvalidEarlyAccess('_getBufferTop');
@@ -1641,6 +1642,7 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['canPlayerSelect'] != 'undefined', 'missing Wasm export: canPlayerSelect');
   assert(typeof wasmExports['reset'] != 'undefined', 'missing Wasm export: reset');
   assert(typeof wasmExports['endTurn'] != 'undefined', 'missing Wasm export: endTurn');
+  assert(typeof wasmExports['restartGame'] != 'undefined', 'missing Wasm export: restartGame');
   assert(typeof wasmExports['getMovingToTileId'] != 'undefined', 'missing Wasm export: getMovingToTileId');
   assert(typeof wasmExports['getBufferStack'] != 'undefined', 'missing Wasm export: getBufferStack');
   assert(typeof wasmExports['getBufferTop'] != 'undefined', 'missing Wasm export: getBufferTop');
@@ -1670,6 +1672,7 @@ function assignWasmExports(wasmExports) {
   _canPlayerSelect = Module['_canPlayerSelect'] = createExportWrapper('canPlayerSelect', 2);
   _reset = Module['_reset'] = createExportWrapper('reset', 0);
   _endTurn = Module['_endTurn'] = createExportWrapper('endTurn', 0);
+  _restartGame = Module['_restartGame'] = createExportWrapper('restartGame', 0);
   _getMovingToTileId = Module['_getMovingToTileId'] = createExportWrapper('getMovingToTileId', 0);
   _getBufferStack = Module['_getBufferStack'] = createExportWrapper('getBufferStack', 0);
   _getBufferTop = Module['_getBufferTop'] = createExportWrapper('getBufferTop', 0);
