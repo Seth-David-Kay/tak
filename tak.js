@@ -123,7 +123,8 @@ function updateBoard() {
     const sideLength = getBoardSize();
     const boardSize = sideLength * sideLength;
     const bufferCount = Module._getBufferCount();
-    // get some buffer information
+
+    // Get some buffer information
     let targetHoverTileId = -1;
     if (bufferCount > 0) {
         const movingToId = Module._getMovingToTileId();
@@ -133,7 +134,8 @@ function updateBoard() {
             targetHoverTileId = parseInt(active_tile.id.split("-")[1]);
         }
     }
-    // draw board
+
+    // Draw board
     for (let tileId = 0; tileId < boardSize; tileId++) {
         const tileElement = document.getElementById(`boardTile-${tileId}`);
         tileElement.replaceChildren();
@@ -145,16 +147,26 @@ function updateBoard() {
         const isHoverTile = tileId === targetHoverTileId && bufferCount > 0;
         const totalPieces = count + (isHoverTile ? bufferCount : 0);
 
-        // Dynamic offset: shrink if stack would overflow the tile
+        const tileWidth = tileElement.offsetWidth;
         const tileHeight = tileElement.offsetHeight;
-        const stepOffset = totalPieces <= 1
-            ? 0
-            : Math.min(12, Math.floor((tileHeight * 0.78) / totalPieces));
+
+        // Make pieces roughly 60% of the tile width
+        const pieceSize = Math.floor(tileWidth * 0.4);
+
+        // Max step is 12% of the tile's height.
+        // Total stack height shouldn't exceed 75% of the tile's total height.
+        const maxStep = Math.floor(tileHeight * 0.12);
+        const compressedStep = Math.floor((tileHeight * 0.75) / totalPieces);
+
+        const stepOffset = totalPieces <= 1 ? 0 : Math.min(maxStep, compressedStep);
 
         if (count > 0) {
             for (let level = 0; level < count; level++) {
                 const piece = document.createElement("div");
                 piece.classList.add("piece");
+
+                piece.style.width = `${pieceSize}px`;
+                piece.style.height = `${pieceSize}px`;
 
                 const colorBit = (stack >> BigInt(level)) & 1n;
                 piece.classList.add(colorBit === 0n ? "white-piece" : "black-piece");
@@ -167,7 +179,8 @@ function updateBoard() {
                     piece.classList.add("flat-piece");
                 }
 
-                piece.style.top = `calc(50% - ${level * stepOffset}px)`;
+                const centerOffset = ((totalPieces - 1) / 2 - level) * stepOffset;
+                piece.style.top = `calc(50% + ${centerOffset}px)`;
                 tileElement.appendChild(piece);
             }
         }
@@ -179,6 +192,9 @@ function updateBoard() {
             for (let buffer_level = 0; buffer_level < bufferCount; buffer_level++) {
                 const piece = document.createElement("div");
                 piece.classList.add("piece", "in-buffer");
+
+                piece.style.width = `${pieceSize}px`;
+                piece.style.height = `${pieceSize}px`;
 
                 const bufferBitIndex = bufferCount - 1 - buffer_level;
                 const colorBit = (buffer_stack >> BigInt(bufferBitIndex)) & 1n;
@@ -193,7 +209,8 @@ function updateBoard() {
                 }
 
                 const totalLevel = count + buffer_level;
-                piece.style.top = `calc(50% - ${totalLevel * stepOffset}px)`;
+                const centerOffset = ((totalPieces - 1) / 2 - totalLevel) * stepOffset;
+                piece.style.top = `calc(50% + ${centerOffset}px)`;
                 tileElement.appendChild(piece);
             }
         }
@@ -201,7 +218,7 @@ function updateBoard() {
     updatePlayerPanel();
     if (isTurnOver()) {
         endTurnButton.classList.add("turn-over");
-    }else {
+    } else {
         endTurnButton.classList.remove("turn-over");
     }
 }

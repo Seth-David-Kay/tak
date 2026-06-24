@@ -1,2 +1,4 @@
 - [x] add piece count logic
 - [ ] add game won logic
+- [ ] fix overflowing of stacks into the next tile that are too large
+- [ ] fix double click on phoen enlarging issue (problem with my phone?)
