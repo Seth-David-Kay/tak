@@ -208,6 +208,11 @@ function updateBoard() {
         }
     }
     updatePlayerPanel();
+    if (isTurnOver()) {
+        endTurnButton.classList.add("turn-over");
+    }else {
+        endTurnButton.classList.remove("turn-over");
+    }
 }
 
 function isTurnOver() {

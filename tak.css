@@ -34,6 +34,10 @@
     transition: background 0.2s;
 }
 
+.turn-over {
+    background-color: #87B981;
+}
+
 .pulse-red {
     animation: pulse-animation 1s ease-out 1;
 }
@@ -179,6 +183,18 @@ div.boardTile {
     width: 58%;
     aspect-ratio: 1;
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.capstone-piece::after {
+    content: '';
+    width: 30%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
 }
 
 .standing-piece {
