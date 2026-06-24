@@ -136,12 +136,20 @@ function updateBoard() {
     // draw board
     for (let tileId = 0; tileId < boardSize; tileId++) {
         const tileElement = document.getElementById(`boardTile-${tileId}`);
-
         tileElement.replaceChildren();
 
         const count = Module._returnTileCount(tileId);
         const stack = Module._returnTileStack(tileId);
         const topType = Module._returnTopPiece(tileId);
+
+        const isHoverTile = tileId === targetHoverTileId && bufferCount > 0;
+        const totalPieces = count + (isHoverTile ? bufferCount : 0);
+
+        // Dynamic offset: shrink if stack would overflow the tile
+        const tileHeight = tileElement.offsetHeight;
+        const stepOffset = totalPieces <= 1
+            ? 0
+            : Math.min(12, Math.floor((tileHeight * 0.78) / totalPieces));
 
         if (count > 0) {
             for (let level = 0; level < count; level++) {
@@ -159,14 +167,12 @@ function updateBoard() {
                     piece.classList.add("flat-piece");
                 }
 
-                const offset = level * 12;
-                piece.style.top = `calc(50% - ${offset}px)`;
-
+                piece.style.top = `calc(50% - ${level * stepOffset}px)`;
                 tileElement.appendChild(piece);
             }
         }
-        // draw buffer
-        if (tileId === targetHoverTileId && bufferCount > 0) {
+
+        if (isHoverTile) {
             const buffer_stack = Module._getBufferStack();
             const buffer_top = Module._getBufferTop();
 
@@ -187,9 +193,7 @@ function updateBoard() {
                 }
 
                 const totalLevel = count + buffer_level;
-                const offset = totalLevel * 12;
-                piece.style.top = `calc(50% - ${offset}px)`;
-
+                piece.style.top = `calc(50% - ${totalLevel * stepOffset}px)`;
                 tileElement.appendChild(piece);
             }
         }
