@@ -178,7 +178,8 @@ function updateBoard() {
                 const piece = document.createElement("div");
                 piece.classList.add("piece", "in-buffer");
 
-                const colorBit = (buffer_stack >> BigInt(buffer_level)) & 1n;
+                const bufferBitIndex = bufferCount - 1 - buffer_level;
+                const colorBit = (buffer_stack >> BigInt(bufferBitIndex)) & 1n;
                 piece.classList.add(colorBit === 0n ? "white-piece" : "black-piece");
 
                 if (buffer_level === bufferCount - 1) {

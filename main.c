@@ -10,6 +10,7 @@ void printBitmap(uint64_t);
 uint64_t setBit(uint64_t, int, int);
 uint64_t getBit(uint64_t, int);
 int checkIfValidMove(int, int);
+int calculateDirection(int, int);
 
 typedef enum {
 	FLAT = 0,
@@ -69,18 +70,18 @@ void pop(Tile *tile) {
 	tile->top = FLAT;
 	move_buffer.count += 1;
 }
-
-void push(Tile *tile) {
+// returns 1 on success, -1 on failure
+int push(Tile *tile) {
 	// checks
 	// can not push if buffer count is 0
 	// can not push if the tile top is not flat
 	// (TODO) can not push if tile is not in move direction if already part of a
 	// move using move_direction
-	if (move_buffer.count == 0) return;
+	if (move_buffer.count == 0) return -1;
 	if (tile->count > 0){
 		if (tile->top == STANDING && move_buffer.count == 1 && move_buffer.top == CAP){
-			// (TODO) wall breaking
-		} else if (tile->top != FLAT) return;
+			tile->top = FLAT;
+		} else if (tile->top != FLAT) return -1;
 	}
 	// if move == none, fine. else, see if moving in same direction
 
@@ -93,6 +94,7 @@ void push(Tile *tile) {
 	}
 	tile->count += 1;
 	move_buffer.count -= 1;
+	return 1;
 }
 
 // end turn: if direction != none & buffer.count == 0 (moved already & nothing
@@ -148,24 +150,37 @@ void updateBoardLeftClick(int tile_id) {
 	}
 	else if (moving_to_tile_id < 0){
 	 	if (checkIfValidMove(origin_moving_tile_id, tile_id)){
-	 		move_direction = 0; // (TODO) calculate direction
-	 		moving_to_tile_id = tile_id;
-	 		push(tile);
-	 	}else{ // not a valid move
-	 		return;
+	 		move_direction = calculateDirection(origin_moving_tile_id, tile_id); // (TODO) calculate direction
+	 		int valid = push(tile);
+	 		if (valid){
+	 			moving_to_tile_id = tile_id;
+	 		} else {
+	 			move_direction = -1;
+	 		}
 	 	}
 	}
 	else {
-		if (checkIfValidMove(moving_to_tile_id, tile_id)){
-			if (1) { // (TODO) check if valid move direction
-				moving_to_tile_id = tile_id;
-				push(tile);
-			}else{
-				return;
-			}
+		if (tile_id == moving_to_tile_id) {
+			push(tile);
+		} else if (checkIfValidMove(moving_to_tile_id, tile_id) &&
+			calculateDirection(moving_to_tile_id, tile_id) == move_direction) {
+			int valid = push(tile);
+			if (valid) moving_to_tile_id = tile_id;
 		}
 	}
-	return;
+}
+
+// 0=up, 1=down, 2=left, 3=right, -1=same tile
+int calculateDirection(int from_id, int to_id) {
+    int from_row = from_id / BOARD_SIZE;
+    int from_col = from_id % BOARD_SIZE;
+    int to_row   = to_id   / BOARD_SIZE;
+    int to_col   = to_id   % BOARD_SIZE;
+    if (to_row < from_row) return 0;
+    if (to_row > from_row) return 1;
+    if (to_col < from_col) return 2;
+    if (to_col > from_col) return 3;
+    return -1;
 }
 
 // Returns 0 if false, 1 if true
@@ -176,7 +191,7 @@ int checkIfValidMove(int tile_id_from, int tile_id_to){
 	int to_col = tile_id_to % BOARD_SIZE;
 	if (from_row == to_row && ((from_col == (to_col + 1)) || (from_col == (to_col - 1))))
 		return 1;
-	if (from_col == to_col && ((from_row == (to_row) + 1)) || (from_row == (to_row) - 1))
+	if (from_col == to_col && ((from_row == (to_row + 1)) || (from_row == (to_row - 1))))
 		return 1;
 	return 0;
 }
@@ -197,7 +212,7 @@ EMSCRIPTEN_KEEPALIVE
 int canPlayerSelect(int tile_id, int player){
 	Tile *tile = &board[tile_id];
 	if (tile->count == 0) return 0;
-	return getBit(tile->stack, 0) == player;
+	return getBit(tile->stack, tile->count - 1) == player;
 }
 
 EMSCRIPTEN_KEEPALIVE
