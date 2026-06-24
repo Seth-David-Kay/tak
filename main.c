@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 
 #define BOARD_SIZE 3
@@ -11,6 +12,7 @@ uint64_t setBit(uint64_t, int, int);
 uint64_t getBit(uint64_t, int);
 int checkIfValidMove(int, int);
 int calculateDirection(int, int);
+void saveSnapshot();
 
 typedef enum {
 	FLAT = 0,
@@ -38,6 +40,8 @@ static int origin_moving_tile_id = -1; // what tile tiles were taken from
 static Reserve reserve[2] = {}; // reserve[0] is white
 static const int STONE_COUNTS[] = {0, 0, 0, 10, 15, 21, 30, 40, 50};
 static const int CAPSTONE_COUNTS[] = {0, 0, 0, 0, 0, 1, 1, 2, 2};
+static Tile *board_save = NULL;
+static Reserve reserve_save[2] = {};
 
 EMSCRIPTEN_KEEPALIVE
 void init() {
@@ -49,6 +53,7 @@ void init() {
 	reserve[0].capstones = CAPSTONE_COUNTS[BOARD_SIZE];
 	reserve[1].capstones = CAPSTONE_COUNTS[BOARD_SIZE];
 	move_buffer.id = -1;
+	saveSnapshot();
 }
 
 void pop(Tile *tile) {
@@ -135,6 +140,12 @@ void placeStone(int tile_id, int color, int type){
 	tile->count += 1;
 }
 
+void saveSnapshot() {
+	memcpy(board_save, board, BOARD_SIZE * BOARD_SIZE * sizeof(Tile));
+	reserve_save[0] = reserve[0];
+	reserve_save[1] = reserve[1];
+}
+
 EMSCRIPTEN_KEEPALIVE
 void updateBoardLeftClick(int tile_id) {
 	// if left click & nothing, pop
@@ -168,6 +179,17 @@ void updateBoardLeftClick(int tile_id) {
 			if (valid) moving_to_tile_id = tile_id;
 		}
 	}
+}
+
+EMSCRIPTEN_KEEPALIVE
+int canMoveBufferTo(int tile_id) {
+    Tile *tile = &board[tile_id];
+    if (move_buffer.count == 0) return 0;
+    if (tile->count == 0) return 1;
+    if (tile->top == FLAT) return 1;
+    // only legal exception: capstone crushing a standing stone
+    if (tile->top == STANDING && move_buffer.count == 1 && move_buffer.top == CAP) return 1;
+    return 0;
 }
 
 // 0=up, 1=down, 2=left, 3=right, -1=same tile
@@ -217,6 +239,9 @@ int canPlayerSelect(int tile_id, int player){
 
 EMSCRIPTEN_KEEPALIVE
 void reset(){
+	memcpy(board, board_save, BOARD_SIZE * BOARD_SIZE * sizeof(Tile));
+	reserve[0] = reserve_save[0];
+	reserve[1] = reserve_save[1];
 	move_buffer.stack = 0;
 	move_buffer.count = 0;
 	move_buffer.top = FLAT;
@@ -233,6 +258,7 @@ void endTurn(){
 	move_direction = -1;
 	moving_to_tile_id = -1;
 	origin_moving_tile_id = -1;
+	saveSnapshot();
 }
 
 EMSCRIPTEN_KEEPALIVE

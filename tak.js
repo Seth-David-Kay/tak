@@ -79,8 +79,10 @@ function updateBoardLeftClick(board_tile) {
             }
             else {
                 // moving buffer
-                Module._updateBoardLeftClick(tileId);
-                if (Module._getBufferCount() === 0){
+                if (Module._canMoveBufferTo(tileId)) {
+                    Module._updateBoardLeftClick(tileId);
+                }
+                if (Module._getBufferCount() === 0) {
                     active_tile.classList.remove("active_tile");
                     active_tile = null;
                 }
