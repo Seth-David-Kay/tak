@@ -229,13 +229,17 @@ div.boardTile {
 
 .black-piece {
     background-color: #222222;
-    border: 2px solid #444444;
+    border: 2px solid #686868;
     box-shadow: 0 3px 6px rgba(0,0,0,.4), inset 0 0 0 1px rgba(0, 0, 0, 0.5);
 }
 
 /* Mobile Specifics */
 @media (orientation: portrait) {
-    body, .btn, .select-box, div.boardTile {
+    body, .btn, .select-box, div.boardTile, .piece, .flat-piece,
+    .standing-piece, .capstone-piece,#stone-selector,
+    #standing-stone-selector, .capstones, .stones-wrapper,
+    .count-label,
+    div.board {
         touch-action: manipulation;
     }
     body {

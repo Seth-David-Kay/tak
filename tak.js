@@ -156,7 +156,7 @@ function updateBoard() {
                     piece.classList.add("flat-piece");
                 }
 
-                const offset = level * 15;
+                const offset = level * 12;
                 piece.style.top = `calc(50% - ${offset}px)`;
 
                 tileElement.appendChild(piece);
@@ -184,7 +184,7 @@ function updateBoard() {
                 }
 
                 const totalLevel = count + buffer_level;
-                const offset = totalLevel * 15;
+                const offset = totalLevel * 12;
                 piece.style.top = `calc(50% - ${offset}px)`;
 
                 tileElement.appendChild(piece);
