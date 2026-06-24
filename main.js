@@ -1672,7 +1672,7 @@ function assignWasmExports(wasmExports) {
   _canPlayerSelect = Module['_canPlayerSelect'] = createExportWrapper('canPlayerSelect', 2);
   _reset = Module['_reset'] = createExportWrapper('reset', 0);
   _endTurn = Module['_endTurn'] = createExportWrapper('endTurn', 0);
-  _restartGame = Module['_restartGame'] = createExportWrapper('restartGame', 0);
+  _restartGame = Module['_restartGame'] = createExportWrapper('restartGame', 1);
   _getMovingToTileId = Module['_getMovingToTileId'] = createExportWrapper('getMovingToTileId', 0);
   _getBufferStack = Module['_getBufferStack'] = createExportWrapper('getBufferStack', 0);
   _getBufferTop = Module['_getBufferTop'] = createExportWrapper('getBufferTop', 0);

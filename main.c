@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-static int BOARD_SIZE = 3;
+static int BOARD_SIZE = 4;
 
 void printBitmap(uint64_t);
 uint64_t setBit(uint64_t, int, int);
@@ -276,8 +276,14 @@ void endTurn(){
 }
 
 EMSCRIPTEN_KEEPALIVE
-void restartGame(){
-	endTurn();
+void restartGame(int size){
+	move_buffer.stack = 0;
+	move_buffer.count = 0;
+	move_buffer.top = FLAT;
+	move_direction = -1;
+	moving_to_tile_id = -1;
+	origin_moving_tile_id = -1;
+	BOARD_SIZE = size;
 }
 
 EMSCRIPTEN_KEEPALIVE

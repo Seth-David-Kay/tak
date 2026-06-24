@@ -18,6 +18,7 @@ updateBoard();
 
 function renderSquares() {
     const board = document.querySelector(".board");
+    board.replaceChildren();
     const boardArray = [];
     const sideLength = getBoardSize();
     let board_size = sideLength ** 2;
@@ -265,12 +266,13 @@ newGameBtn.addEventListener('click', () => {
         }, { once: true });
         return;
     }
-    Module._restartGame();
+
+    Module._restartGame(newSize);
+    current_turn = 0;
+    selectedPiece = -1;
+    active_tile = null;
+    started_move = 0;
     Module._init();
-    let current_turn = 0;
-    let selectedPiece = -1;
-    let active_tile = null;
-    let started_move = 0;
     renderSquares();
     updateBoard();
 });
