@@ -110,8 +110,8 @@ function updateBoardLeftClick(board_tile) {
 }
 
 function updateBoardRightClick(board_tile) {
-    Module._placeStone(board_tile.id.split("-")[1], 1, 0);
-    updateBoard();
+    // Module._placeStone(board_tile.id.split("-")[1], 1, 0);
+    // updateBoard();
     // Module._updateBoardRightClick(board_tile.id.split("-")[1]);
 }
 
@@ -241,7 +241,7 @@ document.querySelector(".end-turn-btn").addEventListener("click", () => {
 });
 
 stoneSelector.addEventListener("click", () => {
-    if (!started_move) {
+    if (!started_move && Module._getPiecesLeft(current_turn, 0) != 0) {
         selectedPiece = 0;
         active_tile?.classList.remove("active_tile");
         stoneSelector.classList.add("active_tile");
@@ -250,7 +250,7 @@ stoneSelector.addEventListener("click", () => {
 });
 
 standingStoneSelector.addEventListener("click", () => {
-    if (!started_move) {
+    if (!started_move && Module._getPiecesLeft(current_turn, 0) != 0) {
         selectedPiece = 1;
         active_tile?.classList.remove("active_tile");
         standingStoneSelector.classList.add("active_tile");
@@ -259,7 +259,7 @@ standingStoneSelector.addEventListener("click", () => {
 });
 
 capstoneSelector.addEventListener("click", () => {
-    if (!started_move) {
+    if (!started_move && Module._getPiecesLeft(current_turn, 1) != 0) {
         selectedPiece = 2;
         active_tile?.classList.remove("active_tile");
         capstoneSelector.classList.add("active_tile");
@@ -297,8 +297,8 @@ function updatePlayerPanel() {
         capPreview.className = "piece capstone-piece black-piece";
     }
 
-    let remainingStones = Module._returnPiecesLeft(current_turn, 0);
-    let remainingCapstones = Module._returnPiecesLeft(current_turn, 1);
+    let remainingStones = Module._getPiecesLeft(current_turn, 0);
+    let remainingCapstones = Module._getPiecesLeft(current_turn, 1);
 
     document.getElementById("stone-count").textContent = remainingStones;
     document.getElementById("capstone-count").textContent = remainingCapstones;

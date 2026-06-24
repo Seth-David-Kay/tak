@@ -135,9 +135,21 @@ EMSCRIPTEN_KEEPALIVE
 void placeStone(int tile_id, int color, int type){
 	Tile *tile = &board[tile_id];
 	if (tile->count > 0) return;
+	if (type == 0 || 1){
+		if (reserve[color].stones == 0) return;
+	} else {
+		if (reserve[color].capstones == 0) return;
+	}
+
 	tile->top = type;
 	tile->stack = setBit(tile->stack, 0, color);
 	tile->count += 1;
+
+	if (type == 0 || 1){
+		reserve[color].stones -= 1;
+	}else {
+		reserve[color].capstones -= 1;
+	}
 }
 
 void saveSnapshot() {
@@ -303,7 +315,7 @@ int getBufferCount() { return move_buffer.count; }
 
 EMSCRIPTEN_KEEPALIVE
 // 0 is white, 1 is return capstone count
-int returnPiecesLeft(int player, int capstones){
+int getPiecesLeft(int player, int capstones){
 	if (player > 1 || player < 0) return -1;
 	if (capstones) {
 		return reserve[player].capstones;

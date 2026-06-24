@@ -121,12 +121,19 @@
 }
 
 div.board {
-    width: 90vmin;
-    height: 90vmin;
+    width: 85vmin;
+    height: 85vmin;
     border: 5px solid #000;
     margin: auto;
     display: grid;
     box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: grid;
+    place-items: center;
 }
 
 div.boardTile {

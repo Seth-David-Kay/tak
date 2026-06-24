@@ -1,0 +1,2 @@
+- [x] add piece count logic
+- [ ] add game won logic
