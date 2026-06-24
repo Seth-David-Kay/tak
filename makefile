@@ -16,11 +16,6 @@ $(OUT): $(SRC)
 	-s EXPORTED_FUNCTIONS='["_getBoardSize", "_init", "_updateBoardLeftClick", "_updateBoardRightClick", "_getTileStack", "_returnTileCount", "_returnTileStack", "_returnTopPiece", "_placeStone", "_returnPiecesLeft", "_endTurn", "_reset", "_getBufferCount", "_canPlayerSelect", "_getMovingToTileId", "_getBufferStack", "_getBufferTop", "_canMoveBufferTo"]' \
 	-s EXPORTED_RUNTIME_METHODS='["cwrap"]'
 
-release: $(SRC)
-	@echo "Generating release build (O3 optimization)..."
-	@source $(EMSDK_DIR)/emsdk_env.sh > /dev/null 2>&1 && \
-	$(EMCC) $(SRC) -o $(OUT) -O3 -flto $(EMCC_FLAGS)
-
 run: all
 	@echo "Starting server at http://localhost:8001/tak.html"
 	@python -m http.server 8001
