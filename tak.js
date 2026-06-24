@@ -131,7 +131,6 @@ function updateBoard() {
     const boardSize = sideLength * sideLength;
     const bufferCount = Module._getBufferCount();
 
-    // Get some buffer information
     let targetHoverTileId = -1;
     if (bufferCount > 0) {
         const movingToId = Module._getMovingToTileId();
@@ -142,46 +141,64 @@ function updateBoard() {
         }
     }
 
-    // Draw board
     for (let tileId = 0; tileId < boardSize; tileId++) {
         const tileElement = document.getElementById(`boardTile-${tileId}`);
         tileElement.replaceChildren();
 
-        const count = Module._returnTileCount(tileId);
-        const stack = Module._returnTileStack(tileId);
+        const count   = Module._returnTileCount(tileId);
+        const stack   = Module._returnTileStack(tileId);
         const topType = Module._returnTopPiece(tileId);
 
         const isHoverTile = tileId === targetHoverTileId && bufferCount > 0;
         const totalPieces = count + (isHoverTile ? bufferCount : 0);
 
-        const tileWidth = tileElement.offsetWidth;
-        const tileHeight = tileElement.offsetHeight;
+        const tileHeight     = tileElement.offsetHeight;
+        const tileWidth      = tileElement.offsetWidth;
+        const targetHeight   = tileHeight * 0.96;
+        const naturalPiecePx = tileWidth * 0.5;
+        // edit minvisible toward 0.4 for more legible, toward 0.15 if more stay same
+        const minVisible     = 0.15; // each piece must show at least 25% of itself
 
-        // Make pieces roughly 60% of the tile width
-        const pieceSize = Math.floor(tileWidth * 0.4);
+        let stepOffset, pieceScale;
 
-        // Max step is 12% of the tile's height.
-        // Total stack height shouldn't exceed 75% of the tile's total height.
-        const maxStep = Math.floor(tileHeight * 0.12);
-        const compressedStep = Math.floor((tileHeight * 0.75) / totalPieces);
+        if (totalPieces <= 1) {
+            stepOffset = 0;
+            pieceScale = 1;
+        } else {
+            // How much step do we get at natural piece size?
+            const naturalStep = (targetHeight - naturalPiecePx) / (totalPieces - 1);
 
-        const stepOffset = totalPieces <= 1 ? 0 : Math.min(maxStep, compressedStep);
+            if (naturalStep >= minVisible * naturalPiecePx) {
+                // Pieces are readable at natural size — spread to fill tile
+                pieceScale = 1;
+                stepOffset = naturalStep;
+            } else {
+                // Too cramped to read — shrink pieces so step stays at minVisible * piecePx
+                // Solve: (targetHeight - piecePx) / (n-1) = minVisible * piecePx
+                // => targetHeight = piecePx * (1 + (n-1) * minVisible)
+                // => piecePx = targetHeight / (1 + (n-1) * minVisible)
+                const piecePx = targetHeight / (1 + (totalPieces - 1) * minVisible);
+                pieceScale = Math.max(0.1, piecePx / naturalPiecePx);
+                stepOffset = (targetHeight - piecePx) / (totalPieces - 1);
+            }
+        }
+
+        tileElement.style.setProperty('--piece-scale', pieceScale);
+
+        const showLift = totalPieces <= 3;
 
         if (count > 0) {
             for (let level = 0; level < count; level++) {
                 const piece = document.createElement("div");
                 piece.classList.add("piece");
 
-                piece.style.width = `${pieceSize}px`;
-                piece.style.height = `${pieceSize}px`;
-
                 const colorBit = (stack >> BigInt(level)) & 1n;
                 piece.classList.add(colorBit === 0n ? "white-piece" : "black-piece");
 
                 if (level === count - 1) {
-                    if (topType === 1) piece.classList.add("standing-piece");
+                    if (topType === 1)      piece.classList.add("standing-piece");
                     else if (topType === 2) piece.classList.add("capstone-piece");
-                    else piece.classList.add("flat-piece");
+                    else                    piece.classList.add("flat-piece");
                 } else {
                     piece.classList.add("flat-piece");
                 }
@@ -194,34 +211,34 @@ function updateBoard() {
 
         if (isHoverTile) {
             const buffer_stack = Module._getBufferStack();
-            const buffer_top = Module._getBufferTop();
+            const buffer_top   = Module._getBufferTop();
 
             for (let buffer_level = 0; buffer_level < bufferCount; buffer_level++) {
                 const piece = document.createElement("div");
                 piece.classList.add("piece", "in-buffer");
 
-                piece.style.width = `${pieceSize}px`;
-                piece.style.height = `${pieceSize}px`;
+                if (!showLift) piece.style.setProperty('--lift', '0px');
 
                 const bufferBitIndex = bufferCount - 1 - buffer_level;
                 const colorBit = (buffer_stack >> BigInt(bufferBitIndex)) & 1n;
                 piece.classList.add(colorBit === 0n ? "white-piece" : "black-piece");
 
                 if (buffer_level === bufferCount - 1) {
-                    if (buffer_top === 1) piece.classList.add("standing-piece");
+                    if (buffer_top === 1)      piece.classList.add("standing-piece");
                     else if (buffer_top === 2) piece.classList.add("capstone-piece");
-                    else piece.classList.add("flat-piece");
+                    else                       piece.classList.add("flat-piece");
                 } else {
                     piece.classList.add("flat-piece");
                 }
 
-                const totalLevel = count + buffer_level;
+                const totalLevel   = count + buffer_level;
                 const centerOffset = ((totalPieces - 1) / 2 - totalLevel) * stepOffset;
                 piece.style.top = `calc(50% + ${centerOffset}px)`;
                 tileElement.appendChild(piece);
             }
         }
     }
+
     updatePlayerPanel();
     if (isTurnOver()) {
         endTurnButton.classList.add("turn-over");

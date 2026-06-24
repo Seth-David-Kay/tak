@@ -182,7 +182,7 @@ div.boardTile {
     border: 2px solid #000;
 
     position: relative;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .active_tile {
@@ -221,7 +221,7 @@ div.boardTile {
 }
 
 .capstone-piece {
-    width: 58%;
+    width: calc(58% * var(--piece-scale, 1));
     aspect-ratio: 1;
     border-radius: 50%;
     display: flex;
@@ -239,8 +239,8 @@ div.boardTile {
 }
 
 .standing-piece {
-    width: 50%;
-    height: 18%;
+    width: calc(50% * var(--piece-scale, 1));
+    height: calc(18% * var(--piece-scale, 1));
     aspect-ratio: 1;
     border-radius: 8px;
 
@@ -248,7 +248,7 @@ div.boardTile {
 }
 
 .flat-piece {
-    width: 50%;
+    width: calc(50% * var(--piece-scale, 1));
     aspect-ratio: 1;
     border-radius: 8px;
 }
