@@ -48,38 +48,40 @@ function renderSquares() {
 }
 
 function updateBoardLeftClick(board_tile) {
-    let buffer_count = Module._getBufferCount();
     let tileId = board_tile.id.split("-")[1];
+    if (isTurnOver()) {
+        // highlight turn over in a puling red
+        return;
+    }
     if (active_tile) {
+        started_move = 1;
         // placing stones
-        if (active_tile === stoneSelector) {
-            Module._placeStone(tileId, current_turn, 0);
-            active_tile?.classList.remove("active_tile");
-            board_tile.classList.add("active_tile");
-            active_tile = board_tile;
-        }
-        else if (active_tile === standingStoneSelector) {
-            Module._placeStone(tileId, current_turn, 1);
-            active_tile?.classList.remove("active_tile");
-            board_tile.classList.add("active_tile");
-            active_tile = board_tile;
-        }
-        else if (active_tile === capstoneSelector) {
-            Module._placeStone(tileId, current_turn, 2);
-            active_tile?.classList.remove("active_tile");
-            board_tile.classList.add("active_tile");
-            active_tile = board_tile;
+        if (active_tile === stoneSelector || active_tile === standingStoneSelector || active_tile === capstoneSelector) {
+            let pieceType = 0;
+            if (active_tile === standingStoneSelector) pieceType = 1;
+            if (active_tile === capstoneSelector) pieceType = 2;
+
+            if (Module._returnTileCount(tileId) === 0){
+                Module._placeStone(tileId, current_turn, pieceType);
+                active_tile.classList.remove("active_tile");
+                active_tile = null;
+            } else { return; }
         }
 
         else if (board_tile !== active_tile) {
-            if (buffer_count === 0) {
+            if (Module._getBufferCount() === 0) {
                 active_tile?.classList.remove("active_tile");
                 board_tile.classList.add("active_tile");
                 active_tile = board_tile;
+                Module._updateBoardLeftClick(tileId);
             }
             else {
                 // moving buffer
                 Module._updateBoardLeftClick(tileId);
+                if (Module._getBufferCount() === 0){
+                    active_tile.classList.remove("active_tile");
+                    active_tile = null;
+                }
             }
         }
         else if (board_tile === active_tile){
@@ -90,13 +92,14 @@ function updateBoardLeftClick(board_tile) {
         if (Module._canPlayerSelect(tileId, current_turn)){
             board_tile.classList.add("active_tile");
             active_tile = board_tile;
+            Module._updateBoardLeftClick(tileId);
         }
     }
     updateBoard();
 }
 
 function updateBoardRightClick(board_tile) {
-    Module._placeStone(board_tile.id.split("-")[1], 0, 1);
+    Module._placeStone(board_tile.id.split("-")[1], 1, 0);
     updateBoard();
     // Module._updateBoardRightClick(board_tile.id.split("-")[1]);
 }
@@ -209,7 +212,7 @@ document.querySelector(".reset-btn").addEventListener("click", () => {
 });
 
 document.querySelector(".end-turn-btn").addEventListener("click", () => {
-    if (isTurnOver){
+    if (isTurnOver()){
         active_tile?.classList.remove("active_tile");
         active_tile = null;
         started_move = 0;

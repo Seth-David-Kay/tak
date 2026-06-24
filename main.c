@@ -131,19 +131,17 @@ void placeStone(int tile_id, int color, int type){
 
 EMSCRIPTEN_KEEPALIVE
 void updateBoardLeftClick(int tile_id) {
-	printf("%d\n", tile_id);
 	// if left click & nothing, pop
 	// if left click & selected &! moved, pop if valid move (four touching selected)
 	// if left click & selected & moved, pop if valid move (four touching moved)
 	Tile *tile = &board[tile_id];
 	if (origin_moving_tile_id < 0) {
-		if (tile->top != FLAT) return;
 		origin_moving_tile_id = tile_id;
 		pop(tile);
 	}
 	else if (moving_to_tile_id < 0){
 	 	if (checkIfValidMove(origin_moving_tile_id, tile_id)){
-	 		move_direction = 0;
+	 		move_direction = 0; // (TODO) calculate direction
 	 		moving_to_tile_id = tile_id;
 	 		push(tile);
 	 	}else{ // not a valid move
@@ -152,7 +150,7 @@ void updateBoardLeftClick(int tile_id) {
 	}
 	else {
 		if (checkIfValidMove(moving_to_tile_id, tile_id)){
-			if (1) { // check if valid move direction
+			if (1) { // (TODO) check if valid move direction
 				moving_to_tile_id = tile_id;
 				push(tile);
 			}else{
@@ -174,7 +172,7 @@ int checkIfValidMove(int tile_id_from, int tile_id_to){
 	int to_col = tile_id_to % BOARD_SIZE;
 	if (from_row == to_row && ((from_col == (to_col + 1)) || (from_col == (to_col - 1))))
 		return 1;
-	if (from_col == to_col && ((from_row == (to_row) + 1)) || (from_row == (to_row) + 1))
+	if (from_col == to_col && ((from_row == (to_row) + 1)) || (from_row == (to_row) - 1))
 		return 1;
 	return 0;
 }
@@ -200,12 +198,22 @@ int canPlayerSelect(int tile_id, int player){
 
 EMSCRIPTEN_KEEPALIVE
 void reset(){
-
+	move_buffer.stack = 0;
+	move_buffer.count = 0;
+	move_buffer.top = FLAT;
+	move_direction = -1;
+	moving_to_tile_id = -1;
+	origin_moving_tile_id = -1;
 }
 
 EMSCRIPTEN_KEEPALIVE
 void endTurn(){
-
+	move_buffer.stack = 0;
+	move_buffer.count = 0;
+	move_buffer.top = FLAT;
+	move_direction = -1;
+	moving_to_tile_id = -1;
+	origin_moving_tile_id = -1;
 }
 
 EMSCRIPTEN_KEEPALIVE

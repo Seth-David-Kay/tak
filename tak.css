@@ -126,6 +126,7 @@ div.boardTile {
 .active_tile {
     outline: 3px solid blue;
     outline-offset: -3px;
+    box-shadow: 0 0 10px rgba(0, 0, 255, 0.5);
 }
 
 .piece {
