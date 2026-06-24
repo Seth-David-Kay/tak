@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-static int BOARD_SIZE = 4;
+static int BOARD_SIZE = 6;
 
 void printBitmap(uint64_t);
 uint64_t setBit(uint64_t, int, int);
