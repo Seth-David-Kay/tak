@@ -242,16 +242,111 @@ void updateBoardRightClick(int tile_id) {
 	return;
 }
 
-int isGameOverRecursive(int tileId, int* visited, int isFirst) {
+// return -1 if no owner (including standing stone of player color), 0 if white, 1 if black
+static int getTileRoadOwner(int tileId) {
+    Tile *tile = &board[tileId];
+    if (tile->count == 0) return -1;
+    if (tile->top == STANDING) return -1;
+    return getBit(tile->stack, tile->count - 1);
+}
 
+// Returns 1 if a road successfully spans the board to the opposite edge.
+int isGameOverRecursive(int tileId, int* visited, int targetColor, int checkHorizontal) {
+	int total_tiles = BOARD_SIZE * BOARD_SIZE;
+
+	if (tileId < 0 || tileId >= total_tiles) return 0;
+	if (visited[tileId]) return 0;
+	if (getTileRoadOwner(tileId) != targetColor) return 0;
+
+	visited[tileId] = 1;
+	int row = tileId / BOARD_SIZE;
+	int col = tileId % BOARD_SIZE;
+
+	if (checkHorizontal) {
+		if (col == BOARD_SIZE - 1) return 1;
+	} else {
+		if (row == BOARD_SIZE - 1) return 1;
+	}
+	if (row > 0 && isGameOverRecursive(tileId - BOARD_SIZE, visited, targetColor, checkHorizontal)) return 1;
+	if (row < BOARD_SIZE - 1 && isGameOverRecursive(tileId + BOARD_SIZE, visited, targetColor, checkHorizontal)) return 1;
+	if (col > 0 && isGameOverRecursive(tileId - 1, visited, targetColor, checkHorizontal)) return 1;
+	if (col < BOARD_SIZE - 1 && isGameOverRecursive(tileId + 1, visited, targetColor, checkHorizontal)) return 1;
+
+	return 0;
 }
 
 EMSCRIPTEN_KEEPALIVE
-// returns 0 if game is not over, 1 if white wins, and 2 if black wins
-// (TODO) add special logic for two winning moves at the same time, active player wins
-int isGameOver() {
+// Returns 0 if game continues, 1 if White wins, 2 if Black wins.
+int isGameOver(int activePlayer) {
+	int total_tiles = BOARD_SIZE * BOARD_SIZE;
+	int *visited = (int *)calloc(total_tiles, sizeof(int));
+	if (!visited) return 0;
+	int whiteRoad = 0;
+	int blackRoad = 0;
 
+	for (int player = 0; player <= 1; player++) {
+		memset(visited, 0, total_tiles * sizeof(int));
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			if (isGameOverRecursive(i, visited, player, 0)) {
+				if (player == 0) whiteRoad = 1;
+				if (player == 1) blackRoad = 1;
+				break;
+			}
+		}
+	}
+
+	for (int player = 0; player <= 1; player++) {
+		memset(visited, 0, total_tiles * sizeof(int));
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			int startTileId = i * BOARD_SIZE;
+			if (isGameOverRecursive(startTileId, visited, player, 1)) {
+				if (player == 0) whiteRoad = 1;
+				if (player == 1) blackRoad = 1;
+				break;
+			}
+		}
+	}
+
+	free(visited);
+
+	if (whiteRoad && blackRoad) {
+		return (activePlayer == 0) ? 1 : 2;
+	}
+	if (whiteRoad) return 1;
+	if (blackRoad) return 2;
+
+	int whiteOut = (reserve[0].stones == 0 && reserve[0].capstones == 0);
+	int blackOut = (reserve[1].stones == 0 && reserve[1].capstones == 0);
+
+	int boardIsFull = 1;
+	for (int i = 0; i < total_tiles; i++) {
+		if (board[i].count == 0) {
+			boardIsFull = 0;
+			break;
+		}
+	}
+
+	if (whiteOut || blackOut || boardIsFull) {
+		int whiteFlats = 0;
+		int blackFlats = 0;
+
+		for (int i = 0; i < total_tiles; i++) {
+			if (board[i].count > 0 && board[i].top == FLAT) {
+				int topColor = getBit(board[i].stack, board[i].count - 1);
+				if (topColor == 0) whiteFlats++;
+				if (topColor == 1) blackFlats++;
+			}
+		}
+
+		if (whiteFlats > blackFlats) return 1;
+		if (blackFlats > whiteFlats) return 2;
+
+		return (activePlayer == 0) ? 1 : 2;
+	}
+
+	return 0;
 }
+
 
 EMSCRIPTEN_KEEPALIVE
 int canPlayerSelect(int tile_id, int player){

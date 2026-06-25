@@ -8,6 +8,7 @@ let selectedPiece = -1; // -1 is nothing, 0 if flat, 1 is standing, 2 is capston
 let active_tile = null;
 let started_move = 0; // 0 false, 1 true
 let total_moves_taken = 0;
+let is_game_over = 0;
 const stoneSelector = document.getElementById("stone-selector");
 const standingStoneSelector = document.getElementById("standing-stone-selector");
 const capstoneSelector = document.getElementById("capstone-selector");
@@ -22,9 +23,6 @@ export let botEnabled  = false;
 export let botColor = 1; // 0 is white (does first), 1 is black (goes second)
 renderSquares();
 updateBoard();
-
-// TESTS
-Module._isGameOver();
 
 function renderSquares() {
     const board = document.querySelector(".board");
@@ -288,6 +286,17 @@ document.querySelector(".reset-btn").addEventListener("pointerdown", () => {
 
 document.querySelector(".end-turn-btn").addEventListener("pointerdown", () => {
     if (isTurnOver()){
+        let isGameOver = Module._isGameOver();
+        if (isGameOver != 0){
+            is_game_over = 1;
+            if (isGameOver == 1) {
+                const whiteStatus = document.getElementById("white-status");
+                whiteStatus.textContent = "White Has Won";
+            }else {
+                const blackStatus = document.getElementById("black-status");
+                blackStatus.textContent = "Black Has Won";
+            }
+        }
         active_tile?.classList.remove("active_tile");
         active_tile = null;
         started_move = 0;
@@ -297,7 +306,7 @@ document.querySelector(".end-turn-btn").addEventListener("pointerdown", () => {
         Module._endTurn();
         updateBoard();
         if (botEnabled) {
-            if (botColor == current_turn) {
+            if (botColor == current_turn && !is_game_over) {
                 botMove();
             }
         }
@@ -387,21 +396,25 @@ function updatePlayerPanel() {
     const capPreview = document.getElementById("capstone-preview");
 
     if (current_turn === 0) {
-        whiteStatus.textContent = "White's Turn";
-        whiteStatus.className = "white-info active-turn-text";
+        if (!is_game_over) {
+            whiteStatus.textContent = "White's Turn";
+            whiteStatus.className = "white-info active-turn-text";
 
-        blackStatus.textContent = "Black Player";
-        blackStatus.className = "black-info inactive-turn-text";
+            blackStatus.textContent = "Black Player";
+            blackStatus.className = "black-info inactive-turn-text";
+        }
 
         stonePreview.className = "piece flat-piece white-piece";
         standingStonePreview.className = "piece standing-piece white-piece";
         capPreview.className = "piece capstone-piece white-piece";
     } else {
-        whiteStatus.textContent = "White Player";
-        whiteStatus.className = "white-info inactive-turn-text";
+        if (!is_game_over) {
+            whiteStatus.textContent = "White Player";
+            whiteStatus.className = "white-info inactive-turn-text";
 
-        blackStatus.textContent = "Black's Turn";
-        blackStatus.className = "black-info active-turn-text";
+            blackStatus.textContent = "Black's Turn";
+            blackStatus.className = "black-info active-turn-text";
+        }
 
         stonePreview.className = "piece flat-piece black-piece";
         standingStonePreview.className = "piece standing-piece black-piece";

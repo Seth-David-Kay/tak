@@ -1673,7 +1673,7 @@ function assignWasmExports(wasmExports) {
   _updateBoardLeftClick = Module['_updateBoardLeftClick'] = createExportWrapper('updateBoardLeftClick', 1);
   _canMoveBufferTo = Module['_canMoveBufferTo'] = createExportWrapper('canMoveBufferTo', 1);
   _updateBoardRightClick = Module['_updateBoardRightClick'] = createExportWrapper('updateBoardRightClick', 1);
-  _isGameOver = Module['_isGameOver'] = createExportWrapper('isGameOver', 0);
+  _isGameOver = Module['_isGameOver'] = createExportWrapper('isGameOver', 1);
   _canPlayerSelect = Module['_canPlayerSelect'] = createExportWrapper('canPlayerSelect', 2);
   _reset = Module['_reset'] = createExportWrapper('reset', 0);
   _endTurn = Module['_endTurn'] = createExportWrapper('endTurn', 0);
