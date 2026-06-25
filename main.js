@@ -1620,6 +1620,7 @@ var _returnTileStack = Module['_returnTileStack'] = makeInvalidEarlyAccess('_ret
 var _getTileStack = Module['_getTileStack'] = makeInvalidEarlyAccess('_getTileStack');
 var _getBufferCount = Module['_getBufferCount'] = makeInvalidEarlyAccess('_getBufferCount');
 var _getPiecesLeft = Module['_getPiecesLeft'] = makeInvalidEarlyAccess('_getPiecesLeft');
+var _getBotMove = Module['_getBotMove'] = makeInvalidEarlyAccess('_getBotMove');
 var _fflush = makeInvalidEarlyAccess('_fflush');
 var _emscripten_stack_get_end = makeInvalidEarlyAccess('_emscripten_stack_get_end');
 var _emscripten_stack_get_base = makeInvalidEarlyAccess('_emscripten_stack_get_base');
@@ -1653,6 +1654,7 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['getTileStack'] != 'undefined', 'missing Wasm export: getTileStack');
   assert(typeof wasmExports['getBufferCount'] != 'undefined', 'missing Wasm export: getBufferCount');
   assert(typeof wasmExports['getPiecesLeft'] != 'undefined', 'missing Wasm export: getPiecesLeft');
+  assert(typeof wasmExports['getBotMove'] != 'undefined', 'missing Wasm export: getBotMove');
   assert(typeof wasmExports['fflush'] != 'undefined', 'missing Wasm export: fflush');
   assert(typeof wasmExports['emscripten_stack_get_end'] != 'undefined', 'missing Wasm export: emscripten_stack_get_end');
   assert(typeof wasmExports['emscripten_stack_get_base'] != 'undefined', 'missing Wasm export: emscripten_stack_get_base');
@@ -1683,6 +1685,7 @@ function assignWasmExports(wasmExports) {
   _getTileStack = Module['_getTileStack'] = createExportWrapper('getTileStack', 1);
   _getBufferCount = Module['_getBufferCount'] = createExportWrapper('getBufferCount', 0);
   _getPiecesLeft = Module['_getPiecesLeft'] = createExportWrapper('getPiecesLeft', 2);
+  _getBotMove = Module['_getBotMove'] = createExportWrapper('getBotMove', 1);
   _fflush = createExportWrapper('fflush', 1);
   _emscripten_stack_get_end = wasmExports['emscripten_stack_get_end'];
   _emscripten_stack_get_base = wasmExports['emscripten_stack_get_base'];

@@ -14,6 +14,12 @@ const capstoneSelector = document.getElementById("capstone-selector");
 const endTurnButton = document.getElementById("end-turn-btn");
 const newGameBtn = document.getElementById('new-game-btn');
 const boardSizeInput = document.getElementById('board-size-input');
+const settingsBtn    = document.getElementById('settings-btn');
+const settingsDropdown = document.getElementById('settings-dropdown');
+const botToggle      = document.getElementById('bot-toggle');
+const botFirstToggle = document.getElementById('bot-first-toggle');
+export let botEnabled  = false;
+export let botGoesFirst = false;
 renderSquares();
 updateBoard();
 
@@ -144,16 +150,20 @@ function updateBoard() {
     for (let tileId = 0; tileId < boardSize; tileId++) {
         const tileElement = document.getElementById(`boardTile-${tileId}`);
         tileElement.replaceChildren();
+        tileElement.classList.remove('has-buffer');
 
         const count   = Module._returnTileCount(tileId);
         const stack   = Module._returnTileStack(tileId);
         const topType = Module._returnTopPiece(tileId);
 
         const isHoverTile = tileId === targetHoverTileId && bufferCount > 0;
+        if (isHoverTile) tileElement.classList.add('has-buffer');
         const totalPieces = count + (isHoverTile ? bufferCount : 0);
 
         const tileHeight     = tileElement.offsetHeight;
         const tileWidth      = tileElement.offsetWidth;
+        // change liftPx to change lift height
+        const liftPx = Math.round(tileHeight * 0.3);
         const targetHeight   = tileHeight * 0.96;
         const naturalPiecePx = tileWidth * 0.5;
         // edit minvisible toward 0.4 for more legible, toward 0.15 if more stay same
@@ -182,8 +192,6 @@ function updateBoard() {
         }
 
         tileElement.style.setProperty('--piece-scale', pieceScale);
-
-        const showLift = totalPieces <= 3;
 
         if (count > 0) {
             for (let level = 0; level < count; level++) {
@@ -215,8 +223,7 @@ function updateBoard() {
             for (let buffer_level = 0; buffer_level < bufferCount; buffer_level++) {
                 const piece = document.createElement("div");
                 piece.classList.add("piece", "in-buffer");
-
-                if (!showLift) piece.style.setProperty('--lift', '0px');
+                piece.style.setProperty('--lift', `-${liftPx}px`);
 
                 const bufferBitIndex = bufferCount - 1 - buffer_level;
                 const colorBit = (buffer_stack >> BigInt(bufferBitIndex)) & 1n;
@@ -312,7 +319,6 @@ newGameBtn.addEventListener('click', () => {
         }, { once: true });
         return;
     }
-
     Module._restartGame(newSize);
     current_turn = 0;
     selectedPiece = -1;
@@ -322,6 +328,30 @@ newGameBtn.addEventListener('click', () => {
     Module._init();
     renderSquares();
     updateBoard();
+    settingsDropdown.classList.remove('open');
+});
+
+settingsBtn.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();
+    settingsDropdown.classList.toggle('open');
+});
+
+document.addEventListener('pointerdown', (e) => {
+    if (!settingsDropdown.contains(e.target) && e.target !== settingsBtn) {
+        settingsDropdown.classList.remove('open');
+    }
+});
+
+botToggle.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();
+    botEnabled = !botEnabled;
+    botToggle.classList.toggle('active', botEnabled);
+});
+
+botFirstToggle.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();
+    botGoesFirst = !botGoesFirst;
+    botFirstToggle.classList.toggle('active', botGoesFirst);
 });
 
 function updatePlayerPanel() {

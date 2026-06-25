@@ -3,7 +3,7 @@
 EMSDK_DIR = deps/emsdk
 EMCC = $(EMSDK_DIR)/upstream/emscripten/emcc
 
-SRC = main.c
+SRC = main.c tak.c
 OUT = main.js
 
 all: $(OUT)

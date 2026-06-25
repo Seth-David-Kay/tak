@@ -6,10 +6,6 @@
         <script type="module" src="tak.js" defer></script>
     </head>
     <body>
-        <div class="board-size-picker" id="board-size-picker">
-            <input type="number" class="btn board-size-input" id="board-size-input" value="6" min="3" max="8" />
-            <button class="btn new-game-btn" id="new-game-btn">New Game</button>
-        </div>
         <div class="buttons">
             <button class="btn reset-btn">Reset</button>
             <button class="btn end-turn-btn" id="end-turn-btn">End Turn</button>
@@ -37,6 +33,27 @@
             </div>
 
             <div class="black-info" id="black-status">Black Player</div>
+        </div>
+        <div class="settings-wrapper" id="settings-wrapper">
+            <button class="btn settings-btn" id="settings-btn">Settings</button>
+            <div class="settings-dropdown" id="settings-dropdown">
+                <div class="settings-row">
+                    <input type="number" class="btn board-size-input" id="board-size-input" value="6" min="3" max="8" />
+                    <button class="btn new-game-btn" id="new-game-btn">New Game</button>
+                </div>
+                <label class="toggle-row">
+                    <span class="toggle-label">Bot</span>
+                    <div class="toggle" id="bot-toggle">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </label>
+                <label class="toggle-row">
+                    <span class="toggle-label">Bot goes first</span>
+                    <div class="toggle" id="bot-first-toggle">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </label>
+            </div>
         </div>
     </body>
 </html>
