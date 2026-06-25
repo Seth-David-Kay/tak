@@ -291,10 +291,10 @@ document.querySelector(".end-turn-btn").addEventListener("pointerdown", () => {
             is_game_over = 1;
             if (isGameOver == 1) {
                 const whiteStatus = document.getElementById("white-status");
-                whiteStatus.textContent = "White Has Won";
+                whiteStatus.textContent = "White Wins";
             }else {
                 const blackStatus = document.getElementById("black-status");
-                blackStatus.textContent = "Black Has Won";
+                blackStatus.textContent = "Black Wins";
             }
         }
         active_tile?.classList.remove("active_tile");
