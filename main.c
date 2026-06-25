@@ -38,8 +38,8 @@ static int move_direction = -1;
 static int moving_to_tile_id = -1; // what tile is currently being placed on
 static int origin_moving_tile_id = -1; // what tile tiles were taken from
 static Reserve reserve[2] = {}; // reserve[0] is white
-static const int STONE_COUNTS[] = {0, 0, 0, 10, 15, 21, 30, 40, 50};
-static const int CAPSTONE_COUNTS[] = {0, 0, 0, 0, 0, 1, 1, 2, 2};
+static const int STONE_COUNTS[] = {0, 0, 0, 10, 15, 21, 30, 40, 50, 60, 70};
+static const int CAPSTONE_COUNTS[] = {0, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3};
 static Tile *board_save = NULL;
 static Reserve reserve_save[2] = {};
 

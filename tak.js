@@ -19,7 +19,7 @@ const settingsDropdown = document.getElementById('settings-dropdown');
 const botToggle      = document.getElementById('bot-toggle');
 const botFirstToggle = document.getElementById('bot-first-toggle');
 export let botEnabled  = false;
-export let botGoesFirst = false;
+export let botColor = 1; // 0 is white (does first), 1 is black (goes second)
 renderSquares();
 updateBoard();
 
@@ -122,9 +122,6 @@ function updateBoardLeftClick(board_tile) {
 }
 
 function updateBoardRightClick(board_tile) {
-    // Module._placeStone(board_tile.id.split("-")[1], 1, 0);
-    // updateBoard();
-    // Module._updateBoardRightClick(board_tile.id.split("-")[1]);
 }
 
 function getBoardSize(){
@@ -252,6 +249,20 @@ function updateBoard() {
     }
 }
 
+function botMove() {
+    let tileId = 0;
+    let tile = document.getElementById(`boardTile-${tileId}`);
+    if (tile) {
+        let pointerEvent = new PointerEvent("pointerdown", {
+            bubbles: true,
+            cancelable: true,
+            pointerType: "mouse"
+        });
+        tile.dispatchEvent(pointerEvent);
+        endTurnButton.dispatchEvent(pointerEvent);
+    }
+}
+
 function isTurnOver() {
     return started_move === 1 && Module._getBufferCount() === 0;
 }
@@ -275,6 +286,11 @@ document.querySelector(".end-turn-btn").addEventListener("pointerdown", () => {
         total_moves_taken += 1;
         Module._endTurn();
         updateBoard();
+        if (botEnabled) {
+            if (botColor == current_turn) {
+                botMove();
+            }
+        }
     }
 });
 
@@ -308,7 +324,7 @@ capstoneSelector.addEventListener("pointerdown", () => {
 newGameBtn.addEventListener('click', () => {
     const newSize = parseInt(boardSizeInput.value, 10);
 
-    if (isNaN(newSize) || newSize < 3 || newSize > 8) {
+    if (isNaN(newSize) || newSize < 3 || newSize > 10) {
         newGameBtn.classList.remove('pulse-red');
         void newGameBtn.offsetWidth;
         newGameBtn.classList.add('pulse-red');
@@ -327,6 +343,7 @@ newGameBtn.addEventListener('click', () => {
     renderSquares();
     updateBoard();
     settingsDropdown.classList.remove('open');
+    if (botEnabled && botColor == 0) botMove();
 });
 
 settingsBtn.addEventListener('pointerdown', (e) => {
@@ -348,8 +365,8 @@ botToggle.addEventListener('pointerdown', (e) => {
 
 botFirstToggle.addEventListener('pointerdown', (e) => {
     e.stopPropagation();
-    botGoesFirst = !botGoesFirst;
-    botFirstToggle.classList.toggle('active', botGoesFirst);
+    botColor = botColor == 0 ? 1 : 0;
+    botFirstToggle.classList.toggle('active', !botColor);
 });
 
 function updatePlayerPanel() {
