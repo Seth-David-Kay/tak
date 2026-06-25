@@ -1606,6 +1606,7 @@ var _placeStone = Module['_placeStone'] = makeInvalidEarlyAccess('_placeStone');
 var _updateBoardLeftClick = Module['_updateBoardLeftClick'] = makeInvalidEarlyAccess('_updateBoardLeftClick');
 var _canMoveBufferTo = Module['_canMoveBufferTo'] = makeInvalidEarlyAccess('_canMoveBufferTo');
 var _updateBoardRightClick = Module['_updateBoardRightClick'] = makeInvalidEarlyAccess('_updateBoardRightClick');
+var _isGameOver = Module['_isGameOver'] = makeInvalidEarlyAccess('_isGameOver');
 var _canPlayerSelect = Module['_canPlayerSelect'] = makeInvalidEarlyAccess('_canPlayerSelect');
 var _reset = Module['_reset'] = makeInvalidEarlyAccess('_reset');
 var _endTurn = Module['_endTurn'] = makeInvalidEarlyAccess('_endTurn');
@@ -1640,6 +1641,7 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['updateBoardLeftClick'] != 'undefined', 'missing Wasm export: updateBoardLeftClick');
   assert(typeof wasmExports['canMoveBufferTo'] != 'undefined', 'missing Wasm export: canMoveBufferTo');
   assert(typeof wasmExports['updateBoardRightClick'] != 'undefined', 'missing Wasm export: updateBoardRightClick');
+  assert(typeof wasmExports['isGameOver'] != 'undefined', 'missing Wasm export: isGameOver');
   assert(typeof wasmExports['canPlayerSelect'] != 'undefined', 'missing Wasm export: canPlayerSelect');
   assert(typeof wasmExports['reset'] != 'undefined', 'missing Wasm export: reset');
   assert(typeof wasmExports['endTurn'] != 'undefined', 'missing Wasm export: endTurn');
@@ -1671,6 +1673,7 @@ function assignWasmExports(wasmExports) {
   _updateBoardLeftClick = Module['_updateBoardLeftClick'] = createExportWrapper('updateBoardLeftClick', 1);
   _canMoveBufferTo = Module['_canMoveBufferTo'] = createExportWrapper('canMoveBufferTo', 1);
   _updateBoardRightClick = Module['_updateBoardRightClick'] = createExportWrapper('updateBoardRightClick', 1);
+  _isGameOver = Module['_isGameOver'] = createExportWrapper('isGameOver', 0);
   _canPlayerSelect = Module['_canPlayerSelect'] = createExportWrapper('canPlayerSelect', 2);
   _reset = Module['_reset'] = createExportWrapper('reset', 0);
   _endTurn = Module['_endTurn'] = createExportWrapper('endTurn', 0);

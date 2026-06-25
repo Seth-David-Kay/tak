@@ -80,8 +80,6 @@ int push(Tile *tile) {
 	// checks
 	// can not push if buffer count is 0
 	// can not push if the tile top is not flat
-	// (TODO) can not push if tile is not in move direction if already part of a
-	// move using move_direction
 	if (move_buffer.count == 0) return -1;
 	if (tile->count > 0){
 		if (tile->top == STANDING && move_buffer.count == 1 && move_buffer.top == CAP){
@@ -175,7 +173,7 @@ void updateBoardLeftClick(int tile_id) {
 	}
 	else if (moving_to_tile_id < 0){
 	 	if (checkIfValidMove(origin_moving_tile_id, tile_id)){
-	 		move_direction = calculateDirection(origin_moving_tile_id, tile_id); // (TODO) calculate direction
+	 		move_direction = calculateDirection(origin_moving_tile_id, tile_id);
 	 		int valid = push(tile);
 	 		if (valid){
 	 			moving_to_tile_id = tile_id;
@@ -242,6 +240,17 @@ void updateBoardRightClick(int tile_id) {
 	tile->count += 1;
 	// end tests
 	return;
+}
+
+int isGameOverRecursive(int tileId, int* visited, int isFirst) {
+
+}
+
+EMSCRIPTEN_KEEPALIVE
+// returns 0 if game is not over, 1 if white wins, and 2 if black wins
+// (TODO) add special logic for two winning moves at the same time, active player wins
+int isGameOver() {
+
 }
 
 EMSCRIPTEN_KEEPALIVE

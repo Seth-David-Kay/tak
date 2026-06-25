@@ -23,6 +23,9 @@ export let botColor = 1; // 0 is white (does first), 1 is black (goes second)
 renderSquares();
 updateBoard();
 
+// TESTS
+Module._isGameOver();
+
 function renderSquares() {
     const board = document.querySelector(".board");
     board.replaceChildren();
