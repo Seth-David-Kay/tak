@@ -250,7 +250,9 @@ function updateBoard() {
 }
 
 function botMove() {
-    let tileId = 0;
+    let encoded = Module._getBotMove();
+    let tileId = Math.floor(encoded / 3);
+    let pieceType = encoded % 3;
     let tile = document.getElementById(`boardTile-${tileId}`);
     if (tile) {
         let pointerEvent = new PointerEvent("pointerdown", {
@@ -258,6 +260,11 @@ function botMove() {
             cancelable: true,
             pointerType: "mouse"
         });
+        if (total_moves_taken > 2){
+            if (pieceType == 0) stoneSelector.dispatchEvent(pointerEvent);
+            if (pieceType == 1) standingStoneSelector.dispatchEvent(pointerEvent);
+            if (pieceType == 2) capstoneSelector.dispatchEvent(pointerEvent);
+        }
         tile.dispatchEvent(pointerEvent);
         endTurnButton.dispatchEvent(pointerEvent);
     }
