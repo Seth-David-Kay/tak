@@ -160,16 +160,16 @@ function updateBoard() {
         if (isHoverTile) tileElement.classList.add('has-buffer');
         const totalPieces = count + (isHoverTile ? bufferCount : 0);
 
-        const tileHeight     = tileElement.offsetHeight;
-        const tileWidth      = tileElement.offsetWidth;
+        const tileHeight = tileElement.offsetHeight;
+        const tileWidth = tileElement.offsetWidth;
         // change liftPx to change lift height
         const liftPx = Math.round(tileHeight * 0.3);
-        const targetHeight   = tileHeight * 0.96;
+        const targetHeight = tileHeight * 0.96;
         const naturalPiecePx = tileWidth * 0.5;
         // edit minvisible toward 0.4 for more legible, toward 0.15 if more stay same
-        const minVisible     = 0.15; // each piece must show at least 25% of itself
+        const minVisible = 0.15;
         // adjust 0.6 up if default further from each other, down if default closer to each other
-        const maxStep    = naturalPiecePx * 0.3;
+        const maxStep = naturalPiecePx * 0.3;
 
         let stepOffset, pieceScale;
 
@@ -177,11 +177,9 @@ function updateBoard() {
             stepOffset = 0;
             pieceScale = 1;
         } else {
-            // How much step do we get at natural piece size?
             const naturalStep = Math.min(maxStep, (targetHeight - naturalPiecePx) / (totalPieces - 1));
 
             if (naturalStep >= minVisible * naturalPiecePx) {
-                // Pieces are readable at natural size — spread to fill tile
                 pieceScale = 1;
                 stepOffset = naturalStep;
             } else {
@@ -230,14 +228,14 @@ function updateBoard() {
                 piece.classList.add(colorBit === 0n ? "white-piece" : "black-piece");
 
                 if (buffer_level === bufferCount - 1) {
-                    if (buffer_top === 1)      piece.classList.add("standing-piece");
+                    if (buffer_top === 1) piece.classList.add("standing-piece");
                     else if (buffer_top === 2) piece.classList.add("capstone-piece");
-                    else                       piece.classList.add("flat-piece");
+                    else piece.classList.add("flat-piece");
                 } else {
                     piece.classList.add("flat-piece");
                 }
 
-                const totalLevel   = count + buffer_level;
+                const totalLevel = count + buffer_level;
                 const centerOffset = ((totalPieces - 1) / 2 - totalLevel) * stepOffset;
                 piece.style.top = `calc(50% + ${centerOffset}px)`;
                 if (pieceScale < 1) piece.style.border = 'none';
