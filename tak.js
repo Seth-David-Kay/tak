@@ -358,6 +358,7 @@ newGameBtn.addEventListener('click', () => {
     active_tile = null;
     started_move = 0;
     total_moves_taken = 0;
+    is_game_over = 0;
     Module._init();
     renderSquares();
     updateBoard();

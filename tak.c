@@ -16,11 +16,11 @@ typedef struct {
     int capstones;
 } BotReserve;
 
-extern int      getBoardSize(void);
-extern int      returnTileCount(int tile_id);
+extern int getBoardSize(void);
+extern int returnTileCount(int tile_id);
 extern uint64_t returnTileStack(int tile_id);
-extern int      returnTopPiece(int tile_id);
-extern int      getPiecesLeft(int player, int capstones);
+extern int returnTopPiece(int tile_id);
+extern int getPiecesLeft(int player, int capstones);
 
 #define MAX_TILES 64
 #define MAX_MOVES 256
@@ -42,7 +42,7 @@ static void botPlace(BotTile board[], BotReserve res[], int tile_id, int player,
     t->count++;
     t->top = (Piece)type;
     if (type == CAP) res[player].capstones--;
-    else             res[player].stones--;
+    else res[player].stones--;
 }
 
 static void botUnplace(BotTile board[], BotReserve res[], int tile_id, int player, int type) {
@@ -51,7 +51,7 @@ static void botUnplace(BotTile board[], BotReserve res[], int tile_id, int playe
     t->stack = botSetBit(t->stack, t->count, 0);
     t->top = FLAT;
     if (type == CAP) res[player].capstones++;
-    else             res[player].stones++;
+    else res[player].stones++;
 }
 
 static int genMoves(BotTile board[], BotReserve res[], int size, int player, BotMove moves[]) {
@@ -61,7 +61,7 @@ static int genMoves(BotTile board[], BotReserve res[], int size, int player, Bot
         if (board[i].count > 0) continue;
         if (res[player].stones > 0) {
             moves[n++] = (BotMove){ i, FLAT };
-            // To include walls in search: moves[n++] = (BotMove){ i, STANDING };
+            moves[n++] = (BotMove){ i, STANDING };
         }
         if (res[player].capstones > 0 && n < MAX_MOVES) {
             moves[n++] = (BotMove){ i, CAP };
