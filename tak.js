@@ -261,7 +261,7 @@ function botMove() {
             cancelable: true,
             pointerType: "mouse"
         });
-        if (total_moves_taken > 2){
+        if (total_moves_taken >= 2){
             if (pieceType == 0) stoneSelector.dispatchEvent(pointerEvent);
             if (pieceType == 1) standingStoneSelector.dispatchEvent(pointerEvent);
             if (pieceType == 2) capstoneSelector.dispatchEvent(pointerEvent);
