@@ -143,7 +143,7 @@ void placeStone(int tile_id, int color, int type){
 	tile->stack = setBit(tile->stack, 0, color);
 	tile->count += 1;
 
-	if (type == 0 || 1){
+	if (type == 0 || type == 1){
 		reserve[color].stones -= 1;
 	}else {
 		reserve[color].capstones -= 1;
