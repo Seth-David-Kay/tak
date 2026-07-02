@@ -343,6 +343,7 @@ div.boardTile {
 .slider-group {
     display: flex;
     flex-direction: column;
+    padding-bottom: 8px;
     gap: 6px;
     width: 100%;
 }
