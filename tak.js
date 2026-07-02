@@ -253,25 +253,59 @@ function updateBoard() {
     }
 }
 
-function botMove() {
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+async function botMove() {
     document.body.style.pointerEvents = "none";
-    let encoded = Module._getBotMove();
-    let tileId = Math.floor(encoded / 3);
-    let pieceType = encoded % 3;
-    let tile = document.getElementById(`boardTile-${tileId}`);
-    if (tile) {
-        let pointerEvent = new PointerEvent("pointerdown", {
-            bubbles: true,
-            cancelable: true,
-            pointerType: "mouse"
-        });
-        if (total_moves_taken >= 2){
-            if (pieceType == 0) stoneSelector.dispatchEvent(pointerEvent);
-            if (pieceType == 1) standingStoneSelector.dispatchEvent(pointerEvent);
-            if (pieceType == 2) capstoneSelector.dispatchEvent(pointerEvent);
+    const movePtr = Module._getBotMove(current_turn);
+
+    if (movePtr === 0) {
+        console.log("No legal moves available!");
+        return;
+    }
+
+    const clickCount = Module.HEAP32[movePtr >> 2];
+    const clickSequence = [];
+    for (let i = 0; i < clickCount; i++) {
+        clickSequence.push(Module.HEAP32[(movePtr >> 2) + 1 + i]);
+    }
+    const extraData = Module.HEAP32[(movePtr >> 2) + 1 + clickCount];
+
+    if (extraData === -1) {
+        console.log("Bot Action: STACK MOVE SLIDE", clickSequence);
+
+        // Use a for...of loop so we can safely use 'await' inside it
+        for (let i = 0; i < clickSequence.length; i++) {
+            const tileId = clickSequence[i];
+            const tileElement = document.getElementById(`boardTile-${tileId}`);
+
+            if (tileElement) {
+                updateBoardLeftClick(tileElement);
+
+                // Pause to let the user see the current animation frame
+                // 350ms feels smooth, but adjust up or down to change slide speed
+                await delay(350);
+            }
         }
-        tile.dispatchEvent(pointerEvent);
-        endTurnButton.dispatchEvent(pointerEvent);
+    } else {
+        console.log("Bot Action: PLACE PIECE on tile", clickSequence[0], "Type:", extraData);
+        const targetTileId = clickSequence[0];
+        const tileElement = document.getElementById(`boardTile-${targetTileId}`);
+
+        if (tileElement) {
+            if (total_moves_taken >= 2) {
+                if (extraData === 0) stoneSelector.dispatchEvent(new PointerEvent('pointerdown'));
+                else if (extraData === 1) standingStoneSelector.dispatchEvent(new PointerEvent('pointerdown'));
+                else if (extraData === 2) capstoneSelector.dispatchEvent(new PointerEvent('pointerdown'));
+            }
+
+            updateBoardLeftClick(tileElement);
+        }
+    }
+
+    // Pass turn over smoothly once all step animations finish
+    const endTurnBtn = document.querySelector(".end-turn-btn");
+    if (endTurnBtn) {
+        endTurnBtn.dispatchEvent(new PointerEvent('pointerdown'));
     }
     document.body.style.pointerEvents = "auto";
 }
@@ -312,7 +346,7 @@ document.querySelector(".end-turn-btn").addEventListener("pointerdown", () => {
         updateBoard();
         if (botEnabled) {
             if (botColor == current_turn && !is_game_over) {
-                botMove();
+                setTimeout(() => { botMove(); }, 100);
             }
         }
     }
@@ -368,7 +402,7 @@ newGameBtn.addEventListener('click', () => {
     renderSquares();
     updateBoard();
     settingsDropdown.classList.remove('open');
-    if (botEnabled && botColor == 0) botMove();
+    if (botEnabled && botColor == 0) setTimeout(() => { botMove(); }, 100);
 });
 
 settingsBtn.addEventListener('pointerdown', (e) => {
