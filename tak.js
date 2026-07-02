@@ -261,7 +261,7 @@ function updateBoard() {
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function botMove() {
-    document.body.style.pointerEvents = "none";
+    document.querySelectorAll('.board, .picker, .buttons').forEach(el => el.style.pointerEvents = 'none');
     const movePtr = Module._getBotMove(current_turn);
 
     if (movePtr === 0) {
@@ -310,7 +310,7 @@ async function botMove() {
     if (endTurnBtn) {
         endTurnBtn.dispatchEvent(new PointerEvent('pointerdown'));
     }
-    document.body.style.pointerEvents = "auto";
+    document.querySelectorAll('.board, .picker, .buttons').forEach(el => el.style.pointerEvents = 'auto');
 }
 
 function isTurnOver() {
@@ -402,6 +402,7 @@ newGameBtn.addEventListener('click', () => {
     total_moves_taken = 0;
     is_game_over = 0;
     Module._init();
+    Module._setSearchDepth(difficultyValue.textContent);
     renderSquares();
     updateBoard();
     settingsDropdown.classList.remove('open');

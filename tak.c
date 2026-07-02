@@ -1,21 +1,39 @@
 /*
  * Tak bot (Emscripten / WASM)
  * -----------------------------------------------------------------
- * Slide model: a "slide" (stack move) carries N pieces and drops
- * exactly 1 piece on each of the N squares it steps through, in a
- * straight line. This matches the output contract expected by the
- * JS side: [click_count, source_tile, step_tile_1, step_tile_2, ...,
- * -1]. Because only the very top piece of a stack can ever be a
- * standing stone or capstone (everything under it must already be
- * flat), this model is a fully legal, if simplified, subset of Tak's
- * movement rules (it doesn't support splitting a carried group across
- * fewer squares than pieces carried, i.e. dropping 2+ pieces on one
- * square mid-slide).
+ * Slide model: a "slide" (stack move) carries `count` pieces and
+ * steps onto `squares` squares in a straight line (squares <= count).
+ * Every square except the last gets exactly 1 piece; the LAST square
+ * absorbs whatever remains (count - squares + 1 pieces). This covers
+ * the vast majority of real Tak slides, including the single most
+ * important pattern the previous version could not represent at all:
+ * carrying several pieces and dropping more than one of them onto the
+ * final square (e.g. "pick up 3, move 1 square, drop all 3" to finish
+ * a road). The old version forced squares == count (1 piece per
+ * square, always), which made it blind to that whole class of moves
+ * -- including when the OPPONENT had one available, since the search
+ * generates the opponent's candidate moves with the same generator
+ * it uses for itself. That's why stack wins were being missed.
+ *
+ * (The one case still not modeled is an uneven split across more than
+ * one square, e.g. drop 2 then 1 then 1. That pattern is rare and
+ * tactically far less important than the "dump the remainder on the
+ * landing square" pattern above, so it's left out to keep the search
+ * fast.)
+ *
+ * Output contract: [click_count, source_tile, step_tile_1, step_tile_2,
+ * ..., -1]. Each entry after the source is one "piece dropped here"
+ * click; if the final square receives more than one piece, its tile
+ * id simply repeats that many times in a row before the -1 marker.
+ * This is a strict extension of the original format -- single-drop
+ * moves look exactly as before.
  *
  * Fixed / added vs. the original:
+ *   - Slides can now drop a multi-piece stack onto their landing
+ *     square instead of being forced to spread 1 piece per square.
  *   - Correct blocking rules: standing stones and capstones block a
  *     slide, EXCEPT a lone capstone may flatten a standing stone by
- *     landing on it as the final square of its move.
+ *     landing on it alone as the final square of its move.
  *   - Road-win detection (BFS flood fill) used as a hard terminal
  *     condition inside the search, not just a flat-count heuristic.
  *   - Game-over-by-board-full / game-over-by-empty-reserves handled
@@ -52,16 +70,38 @@ extern int getPiecesLeft(int player, int capstones);
 
 #define MAX_TILES     64
 #define MAX_MOVES     600
-#define SEARCH_DEPTH  3
 #define WIN_SCORE     1000000
 #define INF           2000000000
+#define MIN_DEPTH     1
+#define MAX_DEPTH     6   /* raise with care -- cost grows roughly exponentially */
+
+/* Difficulty / search-time knob. Larger = stronger but slower.
+   Change it at runtime via setSearchDepth(); defaults to 3 (the
+   original hardcoded value). */
+static int g_search_depth = 3;
+
+EMSCRIPTEN_KEEPALIVE
+void setSearchDepth(int depth) {
+    if (depth < MIN_DEPTH) depth = MIN_DEPTH;
+    if (depth > MAX_DEPTH) depth = MAX_DEPTH;
+    g_search_depth = depth;
+}
+
+EMSCRIPTEN_KEEPALIVE
+int getSearchDepth(void) {
+    return g_search_depth;
+}
 
 typedef struct {
     int is_move;     /* 0 = Placement, 1 = Stack Move (Slide) */
     int tile_id;     /* Target tile for placement, source tile for slide */
     int piece_type;  /* For placement: FLAT, STANDING, CAP */
     int dir;         /* For slide: 0=Up, 1=Down, 2=Left, 3=Right */
-    int count;       /* For slide: number of pieces carried / squares stepped */
+    int count;       /* For slide: total number of pieces carried */
+    int squares;     /* For slide: number of squares stepped onto (<= count).
+                         Squares 1..squares-1 each get 1 piece; square
+                         `squares` (the landing square) gets whatever is
+                         left: count - (squares - 1) pieces. */
 } BotMove;
 
 /* Static buffer used to pass the sequential click instructions back to JavaScript */
@@ -137,19 +177,26 @@ static void botApplyMove(BotTile board[], BotReserve res[], int size, int player
         src->top = FLAT;
     }
 
-    /* Drop pieces 1-by-1 along the path */
+    /* Drop pieces along the path: 1 piece on each square before the last,
+       then whatever remains on the landing square. */
     int curr_tile = m->tile_id;
-    for (int i = 0; i < m->count; i++) {
+    int piece_idx = 0; /* index into moving_stack, bottom of the carried group first */
+    for (int sq = 1; sq <= m->squares; sq++) {
         curr_tile += offset;
         BotTile *dst = &board[curr_tile];
+        int dropCount = (sq < m->squares) ? 1 : (m->count - (m->squares - 1));
 
-        int p_owner = (moving_stack >> i) & 1;
-        dst->stack = botSetBit(dst->stack, dst->count, p_owner);
-        dst->count++;
-        /* Only the final square receives the true top piece type (which may
-           flatten a standing stone underneath it); intermediate squares
-           always receive a flat, matching genMoves' legality checks below. */
-        dst->top = (i == m->count - 1) ? moving_top_type : FLAT;
+        for (int k = 0; k < dropCount; k++) {
+            int p_owner = (moving_stack >> piece_idx) & 1;
+            dst->stack = botSetBit(dst->stack, dst->count, p_owner);
+            dst->count++;
+            piece_idx++;
+        }
+        /* Only the landing square receives the true top piece type (which
+           may flatten a standing stone underneath it); every other square,
+           and every non-final piece dropped on the landing square, is a
+           flat, matching genMoves' legality checks below. */
+        dst->top = (sq == m->squares) ? moving_top_type : FLAT;
     }
 }
 
@@ -195,38 +242,48 @@ static int genMoves(BotTile board[], BotReserve res[], int size, int player, Bot
 
         int max_carry = board[i].count > size ? size : board[i].count;
         Piece src_top = board[i].top;
+        int x = i % size;
+        int y = i / size;
 
-        for (int count = 1; count <= max_carry; count++) {
-            int x = i % size;
-            int y = i / size;
+        for (int d = 0; d < 4 && n < MAX_MOVES; d++) {
+            /* Walk the direction once to find:
+                 - flat_run: how many consecutive squares from the start are
+                   empty/FLAT (i.e. can be stepped onto, and can be the
+                   landing square with any number of pieces on them).
+                 - flatten_step: the square right after that run, IF it's a
+                   standing stone AND the moving stack's top is a capstone
+                   (so it can be flattened -- but only as a lone,
+                   single-piece landing). -1 if not applicable. */
+            int flat_run = 0;
+            int flatten_step = -1;
+            int nx = x, ny = y;
+            for (int step = 1; step <= max_carry; step++) {
+                nx += dirs[d][0];
+                ny += dirs[d][1];
+                if (nx < 0 || nx >= size || ny < 0 || ny >= size) break;
 
-            for (int d = 0; d < 4; d++) {
-                int nx = x, ny = y;
-                int valid = 1;
+                int tid = ny * size + nx;
+                BotTile *tgt = &board[tid];
 
-                for (int step = 1; step <= count; step++) {
-                    nx += dirs[d][0];
-                    ny += dirs[d][1];
+                if (tgt->count == 0 || tgt->top == FLAT) { flat_run = step; continue; }
+                if (tgt->top == STANDING && src_top == CAP) { flatten_step = step; }
+                break; /* CAP always blocks; STANDING blocks unless just flagged above */
+            }
 
-                    if (nx < 0 || nx >= size || ny < 0 || ny >= size) { valid = 0; break; }
+            if (flat_run == 0 && flatten_step == -1) continue; /* nowhere to go this direction */
 
-                    int target_id = ny * size + nx;
-                    BotTile *tgt = &board[target_id];
-
-                    if (tgt->count == 0 || tgt->top == FLAT) continue; /* empty/flat: passable */
-
-                    if (tgt->top == CAP) { valid = 0; break; } /* never passable */
-
-                    /* tgt->top == STANDING: only passable as the FINAL square,
-                       and only if the moving stack's top piece is a capstone
-                       (a lone capstone flattens the wall). */
-                    if (step == count && src_top == CAP) continue;
-                    valid = 0;
-                    break;
+            for (int count = 1; count <= max_carry && n < MAX_MOVES; count++) {
+                /* Landing on any square within the flat run: squares 1..s-1 get
+                   1 piece each, square s (<= flat_run) absorbs the remainder. */
+                int maxSquares = flat_run < count ? flat_run : count;
+                for (int s = 1; s <= maxSquares && n < MAX_MOVES; s++) {
+                    moves[n++] = (BotMove){ 1, i, 0, d, count, s };
                 }
-
-                if (valid && n < MAX_MOVES) {
-                    moves[n++] = (BotMove){ 1, i, 0, d, count };
+                /* Flattening landing: only legal when the whole carried group
+                   is exactly `flatten_step` pieces, so the landing square
+                   receives exactly 1 (the capstone), as required to flatten. */
+                if (flatten_step != -1 && count == flatten_step && n < MAX_MOVES) {
+                    moves[n++] = (BotMove){ 1, i, 0, d, count, flatten_step };
                 }
             }
         }
@@ -494,7 +551,7 @@ int* getBotMove(int player) {
 
         int score;
         if (!checkTerminal(b, r, size, player, player, &score))
-            score = minimax(b, r, size, SEARCH_DEPTH - 1, -INF, INF, player, 0);
+            score = minimax(b, r, size, g_search_depth - 1, -INF, INF, player, 0);
 
         if (score > best_score) {
             best_score = score;
@@ -512,7 +569,10 @@ int* getBotMove(int player) {
         js_move_output[1] = m.tile_id;
         js_move_output[2] = m.piece_type;
     } else {
-        /* [Click Count, Source Tile ID, Step 1 Tile ID, Step 2 Tile ID..., -1 Marker] */
+        /* [Click Count, Source Tile ID, Step 1 Tile ID, Step 2 Tile ID..., -1 Marker]
+           One entry per piece dropped. If the landing square receives more
+           than one piece, its tile id simply appears that many times in a
+           row right before the -1 marker. */
         int dirs[4][2] = { {0,1}, {0,-1}, {-1,0}, {1,0} };
         int x = m.tile_id % size;
         int y = m.tile_id / size;
@@ -520,13 +580,16 @@ int* getBotMove(int player) {
         js_move_output[0] = 1 + m.count;
         js_move_output[1] = m.tile_id;
 
+        int idx = 2;
         int nx = x, ny = y;
-        for (int step = 1; step <= m.count; step++) {
+        for (int sq = 1; sq <= m.squares; sq++) {
             nx += dirs[m.dir][0];
             ny += dirs[m.dir][1];
-            js_move_output[1 + step] = ny * size + nx;
+            int tid = ny * size + nx;
+            int dropCount = (sq < m.squares) ? 1 : (m.count - (m.squares - 1));
+            for (int k = 0; k < dropCount; k++) js_move_output[idx++] = tid;
         }
-        js_move_output[1 + js_move_output[0]] = -1; /* Denotes a slide movement */
+        js_move_output[idx] = -1; /* Denotes a slide movement */
     }
 
     return js_move_output;
