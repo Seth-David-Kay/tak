@@ -108,6 +108,22 @@ typedef struct {
 static int js_move_output[32];
 
 /* ---------------------------------------------------------------- */
+/* Search scratch space                                              */
+/* ---------------------------------------------------------------- */
+/* minimax() used to declare `BotMove moves[MAX_MOVES]` plus board/reserve
+   copies as LOCAL variables on every recursive call. At MAX_MOVES=600 that's
+   ~15KB per call, and Emscripten's default WASM stack is only 64KB -- so a
+   search depth of just 3-4 could blow the stack, which shows up as a
+   generic "out of bounds memory access" crash rather than a clear error.
+   Fix: keep one reusable buffer per recursion depth in static (non-stack)
+   storage instead. Recursion is strictly depth-first and single-threaded,
+   so each depth's slot is fully consumed before it's reused. */
+#define MAX_SEARCH_LEVELS (MAX_DEPTH + 2)
+static BotMove   g_move_buf[MAX_SEARCH_LEVELS][MAX_MOVES];
+static BotTile   g_board_buf[MAX_SEARCH_LEVELS][MAX_TILES];
+static BotReserve g_res_buf[MAX_SEARCH_LEVELS][2];
+
+/* ---------------------------------------------------------------- */
 /* Bit / tile helpers                                                */
 /* ---------------------------------------------------------------- */
 
@@ -468,12 +484,12 @@ static int checkTerminal(BotTile b[], BotReserve r[], int size, int root_player,
 
 static int minimax(BotTile board[], BotReserve res[], int size,
                     int depth, int alpha, int beta,
-                    int root_player, int maximizing) {
+                    int root_player, int maximizing, int level) {
     if (depth == 0)
         return evalBoard(board, size, root_player);
 
     int cur = maximizing ? root_player : (1 - root_player);
-    BotMove moves[MAX_MOVES];
+    BotMove *moves = g_move_buf[level];
     int n = genMoves(board, res, size, cur, moves);
 
     if (n == 0) {
@@ -481,17 +497,19 @@ static int minimax(BotTile board[], BotReserve res[], int size,
         return (fs > 0) ? (WIN_SCORE / 2) : ((fs < 0) ? -(WIN_SCORE / 2) : 0);
     }
 
+    BotTile *b = g_board_buf[level + 1];
+    BotReserve *r = g_res_buf[level + 1];
+
     if (maximizing) {
         int best = -INF;
         for (int i = 0; i < n; i++) {
-            BotTile b[MAX_TILES]; BotReserve r[2];
             memcpy(b, board, size * size * sizeof(BotTile));
-            memcpy(r, res, sizeof(r));
+            memcpy(r, res, 2 * sizeof(BotReserve));
             botApplyMove(b, r, size, cur, &moves[i]);
 
             int score;
             if (!checkTerminal(b, r, size, root_player, cur, &score))
-                score = minimax(b, r, size, depth - 1, alpha, beta, root_player, 0);
+                score = minimax(b, r, size, depth - 1, alpha, beta, root_player, 0, level + 1);
 
             if (score > best)  best = score;
             if (score > alpha) alpha = score;
@@ -501,14 +519,13 @@ static int minimax(BotTile board[], BotReserve res[], int size,
     } else {
         int best = INF;
         for (int i = 0; i < n; i++) {
-            BotTile b[MAX_TILES]; BotReserve r[2];
             memcpy(b, board, size * size * sizeof(BotTile));
-            memcpy(r, res, sizeof(r));
+            memcpy(r, res, 2 * sizeof(BotReserve));
             botApplyMove(b, r, size, cur, &moves[i]);
 
             int score;
             if (!checkTerminal(b, r, size, root_player, cur, &score))
-                score = minimax(b, r, size, depth - 1, alpha, beta, root_player, 1);
+                score = minimax(b, r, size, depth - 1, alpha, beta, root_player, 1, level + 1);
 
             if (score < best) best = score;
             if (score < beta) beta = score;
@@ -524,8 +541,8 @@ int* getBotMove(int player) {
     int total = size * size;
     if (size <= 0 || total > MAX_TILES) return NULL;
 
-    BotTile  board[MAX_TILES];
-    BotReserve res[2];
+    BotTile    *board = g_board_buf[0];
+    BotReserve *res   = g_res_buf[0];
     for (int i = 0; i < total; i++) {
         board[i].count = returnTileCount(i);
         board[i].stack = returnTileStack(i);
@@ -536,22 +553,24 @@ int* getBotMove(int player) {
     res[1].stones    = getPiecesLeft(1, 0);
     res[1].capstones = getPiecesLeft(1, 1);
 
-    BotMove moves[MAX_MOVES];
+    BotMove *moves = g_move_buf[0];
     int n = genMoves(board, res, size, player, moves);
     if (n == 0) return NULL;
 
     int best_score = -INF;
     int best_idx   = -1;
 
+    BotTile    *b = g_board_buf[1];
+    BotReserve *r = g_res_buf[1];
+
     for (int i = 0; i < n; i++) {
-        BotTile b[MAX_TILES]; BotReserve r[2];
         memcpy(b, board, total * sizeof(BotTile));
-        memcpy(r, res, sizeof(res));
+        memcpy(r, res, 2 * sizeof(BotReserve));
         botApplyMove(b, r, size, player, &moves[i]);
 
         int score;
         if (!checkTerminal(b, r, size, player, player, &score))
-            score = minimax(b, r, size, g_search_depth - 1, -INF, INF, player, 0);
+            score = minimax(b, r, size, g_search_depth - 1, -INF, INF, player, 0, 1);
 
         if (score > best_score) {
             best_score = score;
