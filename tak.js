@@ -251,23 +251,31 @@ function updateBoard() {
 }
 
 function botMove() {
-    let encoded = Module._getBotMove();
-    let tileId = Math.floor(encoded / 3);
-    let pieceType = encoded % 3;
-    let tile = document.getElementById(`boardTile-${tileId}`);
-    if (tile) {
-        let pointerEvent = new PointerEvent("pointerdown", {
-            bubbles: true,
-            cancelable: true,
-            pointerType: "mouse"
-        });
-        if (total_moves_taken >= 2){
-            if (pieceType == 0) stoneSelector.dispatchEvent(pointerEvent);
-            if (pieceType == 1) standingStoneSelector.dispatchEvent(pointerEvent);
-            if (pieceType == 2) capstoneSelector.dispatchEvent(pointerEvent);
+    const movePtr = Module._getBotMove(current_turn);
+
+    if (movePtr === 0) {
+        console.log("No legal moves available!");
+    } else {
+        // Read the array structure directly from WASM linear memory
+        const clickCount = Module.HEAP32[movePtr >> 2];
+
+        const clickSequence = [];
+        for (let i = 0; i < clickCount; i++) {
+            clickSequence.push(Module.HEAP32[(movePtr >> 2) + 1 + i]);
         }
-        tile.dispatchEvent(pointerEvent);
-        endTurnButton.dispatchEvent(pointerEvent);
+
+        // The final index holds the move structural descriptor
+        const extraData = Module.HEAP32[(movePtr >> 2) + 1 + clickCount];
+
+        if (extraData === -1) {
+            console.log("Action Type: STACK MOVE SLIDE");
+            console.log("Ordered Click Sequence:", clickSequence);
+            // e.g., [1, 2, 3] -> Select tile 1, drop on tile 2, drop on tile 3
+        } else {
+            console.log("Action Type: PLACE PIECE");
+            console.log("Target Tile ID:", clickSequence[0]);
+            console.log("Piece Type to spawn:", extraData); // 0=FLAT, 1=STANDING, 2=CAP
+        }
     }
 }
 

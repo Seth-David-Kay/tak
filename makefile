@@ -14,7 +14,7 @@ $(OUT): $(SRC)
 	-s MODULARIZE=1 \
 	-s EXPORT_ES6=1 \
 	-s EXPORTED_FUNCTIONS='["_getBoardSize", "_init", "_updateBoardLeftClick", "_updateBoardRightClick", "_getTileStack", "_returnTileCount", "_returnTileStack", "_returnTopPiece", "_placeStone", "_getPiecesLeft", "_endTurn", "_reset", "_getBufferCount", "_canPlayerSelect", "_getMovingToTileId", "_getBufferStack", "_getBufferTop", "_canMoveBufferTo", "_restartGame", "_getBotMove", "_isGameOver"]' \
-	-s EXPORTED_RUNTIME_METHODS='["cwrap"]'
+	-s EXPORTED_RUNTIME_METHODS='["cwrap", "HEAP32"]'
 
 run: all
 	@echo "Starting server at http://localhost:8001/tak.html"
