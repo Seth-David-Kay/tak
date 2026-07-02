@@ -292,13 +292,9 @@ async function botMove() {
                 if (extraData === 0) stoneSelector.dispatchEvent(new PointerEvent('pointerdown'));
                 else if (extraData === 1) standingStoneSelector.dispatchEvent(new PointerEvent('pointerdown'));
                 else if (extraData === 2) capstoneSelector.dispatchEvent(new PointerEvent('pointerdown'));
-
-                // Give a split second to show the tool selector becoming active
-                await delay(200);
             }
 
             updateBoardLeftClick(tileElement);
-            await delay(350);
         }
     }
 
