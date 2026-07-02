@@ -117,6 +117,9 @@ function updateBoardLeftClick(board_tile) {
             board_tile.classList.add("active_tile");
             active_tile = board_tile;
             Module._updateBoardLeftClick(tileId);
+        }else if (Module._returnTileCount(tileId) == 0) {
+            started_move = 1;
+            Module._placeStone(tileId, current_turn, 0);
         }
     }
     updateBoard();
