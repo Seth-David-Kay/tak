@@ -254,6 +254,7 @@ function updateBoard() {
 }
 
 function botMove() {
+    document.body.style.pointerEvents = "none";
     let encoded = Module._getBotMove();
     let tileId = Math.floor(encoded / 3);
     let pieceType = encoded % 3;
@@ -272,6 +273,7 @@ function botMove() {
         tile.dispatchEvent(pointerEvent);
         endTurnButton.dispatchEvent(pointerEvent);
     }
+    document.body.style.pointerEvents = "auto";
 }
 
 function isTurnOver() {
