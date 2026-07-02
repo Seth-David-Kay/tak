@@ -339,6 +339,73 @@ div.boardTile {
     box-shadow: 0 3px 6px rgba(0,0,0,.4), inset 0 0 0 1px rgba(0, 0, 0, 0.5);
 }
 
+
+.slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slider-label,
+.slider-value {
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.ui-slider {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    -webkit-appearance: none;
+    appearance: none;
+
+    height: 6px;
+    background: #000;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Chrome/Safari */
+.ui-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+
+    width: 18px;
+    height: 18px;
+
+    background: #f0f0f0;
+    border: 2px solid #000;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Firefox */
+.ui-slider::-moz-range-track {
+    height: 6px;
+    background: #000;
+    border-radius: 3px;
+}
+
+.ui-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+
+    background: #f0f0f0;
+    border: 2px solid #000;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 /* Mobile Specifics */
 @media (orientation: portrait) {
     body, .btn, .select-box, div.boardTile, .piece, .flat-piece,
@@ -487,5 +554,26 @@ div.boardTile {
     .toggle.active .toggle-knob {
         left: calc(100% - 5.8vw);   /* was 4.3vw, adjust for new width */
         transform: translateY(-50%);
+    }
+
+    .slider-label,
+    .slider-value {
+        font-size: 3.5vw;
+    }
+
+    .ui-slider::-webkit-slider-thumb {
+        width: 5vw;
+        height: 5vw;
+        border-width: 0.8vw;
+    }
+
+    .ui-slider::-moz-range-thumb {
+        width: 5vw;
+        height: 5vw;
+        border-width: 0.8vw;
+    }
+
+    .ui-slider {
+        height: 1vw;
     }
 }

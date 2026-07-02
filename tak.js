@@ -19,10 +19,16 @@ const settingsBtn    = document.getElementById('settings-btn');
 const settingsDropdown = document.getElementById('settings-dropdown');
 const botToggle      = document.getElementById('bot-toggle');
 const botFirstToggle = document.getElementById('bot-first-toggle');
+const difficultySlider = document.getElementById("difficulty-slider");
+const difficultyValue = document.getElementById("difficulty-value");
 export let botEnabled  = false;
 export let botColor = 1; // 0 is white (does first), 1 is black (goes second)
 renderSquares();
 updateBoard();
+
+difficultySlider.addEventListener("input", () => {
+    difficultyValue.textContent = difficultySlider.value;
+});
 
 function renderSquares() {
     const board = document.querySelector(".board");
@@ -280,9 +286,7 @@ async function botMove() {
 
             if (tileElement) {
                 updateBoardLeftClick(tileElement);
-
                 // Pause to let the user see the current animation frame
-                // 350ms feels smooth, but adjust up or down to change slide speed
                 await delay(350);
             }
         }
@@ -302,7 +306,6 @@ async function botMove() {
         }
     }
 
-    // Pass turn over smoothly once all step animations finish
     const endTurnBtn = document.querySelector(".end-turn-btn");
     if (endTurnBtn) {
         endTurnBtn.dispatchEvent(new PointerEvent('pointerdown'));
