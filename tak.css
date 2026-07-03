@@ -519,6 +519,11 @@ div.boardTile {
         transform: translate(-50%, -50%);
         width: 70vw;
         z-index: 200;
+        padding: 4vw;
+    }
+
+    .slider-group {
+        padding-bottom: 2vw;
     }
 
     .board-size-input {
