@@ -263,49 +263,49 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function botMove() {
     document.querySelectorAll('.board, .picker, .buttons').forEach(el => el.style.pointerEvents = 'none');
     const movePtr = Module._getBotMove(current_turn);
-
     if (movePtr === 0) {
         console.log("No legal moves available!");
         return;
     }
-
     const clickCount = Module.HEAP32[movePtr >> 2];
     const clickSequence = [];
     for (let i = 0; i < clickCount; i++) {
         clickSequence.push(Module.HEAP32[(movePtr >> 2) + 1 + i]);
     }
     const extraData = Module.HEAP32[(movePtr >> 2) + 1 + clickCount];
-
     if (extraData === -1) {
-        console.log("Bot Action: STACK MOVE SLIDE", clickSequence);
+        const sourceTileId = clickSequence[0];
+        const carryCount = clickSequence.length - 1;
 
-        // Use a for...of loop so we can safely use 'await' inside it
-        for (let i = 0; i < clickSequence.length; i++) {
+        const sourceElement = document.getElementById(`boardTile-${sourceTileId}`);
+        if (sourceElement) {
+            for (let c = 0; c < carryCount; c++) {
+                updateBoardLeftClick(sourceElement);
+                await delay(300);
+            }
+        }
+
+        // Now walk the drop squares, one click per piece dropped
+        for (let i = 1; i < clickSequence.length; i++) {
             const tileId = clickSequence[i];
             const tileElement = document.getElementById(`boardTile-${tileId}`);
-
             if (tileElement) {
                 updateBoardLeftClick(tileElement);
-                // Pause to let the user see the current animation frame
                 await delay(350);
             }
         }
     } else {
-        console.log("Bot Action: PLACE PIECE on tile", clickSequence[0], "Type:", extraData);
         const targetTileId = clickSequence[0];
         const tileElement = document.getElementById(`boardTile-${targetTileId}`);
-
         if (tileElement) {
             if (total_moves_taken >= 2) {
                 if (extraData === 0) stoneSelector.dispatchEvent(new PointerEvent('pointerdown'));
                 else if (extraData === 1) standingStoneSelector.dispatchEvent(new PointerEvent('pointerdown'));
                 else if (extraData === 2) capstoneSelector.dispatchEvent(new PointerEvent('pointerdown'));
             }
-
             updateBoardLeftClick(tileElement);
         }
     }
-
     const endTurnBtn = document.querySelector(".end-turn-btn");
     if (endTurnBtn) {
         endTurnBtn.dispatchEvent(new PointerEvent('pointerdown'));
