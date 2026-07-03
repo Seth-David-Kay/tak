@@ -21,6 +21,8 @@ const botToggle      = document.getElementById('bot-toggle');
 const botFirstToggle = document.getElementById('bot-first-toggle');
 const difficultySlider = document.getElementById("difficulty-slider");
 const difficultyValue = document.getElementById("difficulty-value");
+const modalNewGameBtn = document.getElementById("modal-new-game-btn");
+const modalCancelBtn = document.getElementById("modal-cancel-btn");
 export let botEnabled  = false;
 export let botColor = 1; // 0 is white (does first), 1 is black (goes second)
 renderSquares();
@@ -329,14 +331,16 @@ document.querySelector(".reset-btn").addEventListener("pointerdown", () => {
 document.querySelector(".end-turn-btn").addEventListener("pointerdown", () => {
     if (isTurnOver()){
         let isGameOver = Module._isGameOver();
-        if (isGameOver != 0){
+        if (isGameOver != 0 && is_game_over == 0){
             is_game_over = 1;
             if (isGameOver == 1) {
                 const whiteStatus = document.getElementById("white-status");
                 whiteStatus.textContent = "White Wins";
+                triggerGameOverPopup("White");
             }else {
                 const blackStatus = document.getElementById("black-status");
                 blackStatus.textContent = "Black Wins";
+                triggerGameOverPopup("Black");
             }
         }
         active_tile?.classList.remove("active_tile");
@@ -382,19 +386,8 @@ capstoneSelector.addEventListener("pointerdown", () => {
     }
 });
 
-newGameBtn.addEventListener('click', () => {
-    const newSize = parseInt(boardSizeInput.value, 10);
-
-    if (isNaN(newSize) || newSize < 3 || newSize > 10) {
-        newGameBtn.classList.remove('pulse-red');
-        void newGameBtn.offsetWidth;
-        newGameBtn.classList.add('pulse-red');
-        newGameBtn.addEventListener('animationend', () => {
-            newGameBtn.classList.remove('pulse-red');
-        }, { once: true });
-        return;
-    }
-    Module._restartGame(newSize);
+function startNewGame(board_size) {
+    Module._restartGame(board_size);
     current_turn = 0;
     selectedPiece = -1;
     active_tile = null;
@@ -405,9 +398,50 @@ newGameBtn.addEventListener('click', () => {
     Module._setSearchDepth(difficultyValue.textContent);
     renderSquares();
     updateBoard();
-    settingsDropdown.classList.remove('open');
     if (botEnabled && botColor == 0) setTimeout(() => { botMove(); }, 100);
+}
+
+newGameBtn.addEventListener('click', () => {
+    const newSize = parseInt(boardSizeInput.value, 10);
+    if (isNaN(newSize) || newSize < 3 || newSize > 10) {
+        newGameBtn.classList.remove('pulse-red');
+        void newGameBtn.offsetWidth;
+        newGameBtn.classList.add('pulse-red');
+        newGameBtn.addEventListener('animationend', () => {
+            newGameBtn.classList.remove('pulse-red');
+        }, { once: true });
+        return;
+    }
+    startNewGame(newSize);
+    settingsDropdown.classList.remove('open');
 });
+
+modalCancelBtn.addEventListener("pointerdown", () => {
+    document.getElementById("win-modal").classList.remove("open");
+});
+
+modalNewGameBtn.addEventListener("pointerdown", () => {
+    const newSize = parseInt(boardSizeInput.value, 10);
+    if (isNaN(newSize) || newSize < 3 || newSize > 10) {
+        modalNewGameBtn.classList.remove('pulse-red');
+        void modalNewGameBtn.offsetWidth;
+        modalNewGameBtn.classList.add('pulse-red');
+        modalNewGameBtn.addEventListener('animationend', () => {
+            modalNewGameBtn.classList.remove('pulse-red');
+        }, { once: true });
+        return;
+    }
+    startNewGame(newSize);
+    document.getElementById("win-modal").classList.remove("open");
+});
+
+function triggerGameOverPopup(winnerName) {
+    const winModal = document.getElementById("win-modal");
+    const winMessage = document.getElementById("win-message");
+
+    winMessage.textContent = `${winnerName} Wins!`;
+    winModal.classList.add("open");
+}
 
 settingsBtn.addEventListener('pointerdown', (e) => {
     e.stopPropagation();
