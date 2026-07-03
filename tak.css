@@ -1,3 +1,12 @@
+.count-subtext {
+    font-size: 0.75rem;
+    font-weight: normal;
+    font-family: monospace;
+    opacity: 0.8;
+    display: inline-block;
+    margin-top: 2px;
+}
+
 .settings-wrapper {
     position: fixed;
     top: 1rem;
@@ -490,12 +499,17 @@ div.boardTile {
 
     .white-info, .black-info {
         font-size: 3.5vw;
-        white-space: nowrap;
+        white-space: normal;
         flex-shrink: 1;
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 22vw;
         text-align: center;
+        line-height: 1.2;
+    }
+
+    .count-subtext {
+        font-size: 2.8vw;
     }
 
     .settings-wrapper {

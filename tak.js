@@ -439,12 +439,23 @@ function updatePlayerPanel() {
     const standingStonePreview = document.getElementById("standing-stone-preview");
     const capPreview = document.getElementById("capstone-preview");
 
+    // Calculate remaining counts for the active player
+    let remainingStones = Module._getPiecesLeft(current_turn, 0);
+    let remainingCapstones = Module._getPiecesLeft(current_turn, 1);
+
+    // Calculate remaining pieces for the WAITING (other) player
+    let otherTurn = 1 - current_turn;
+    let otherStones = Module._getPiecesLeft(otherTurn, 0);
+    let otherCapstones = Module._getPiecesLeft(otherTurn, 1);
+    let otherTotalLeft = otherStones + otherCapstones;
+
     if (current_turn === 0) {
         if (!is_game_over) {
-            whiteStatus.textContent = "White's Turn";
+            whiteStatus.innerHTML = "White's Turn";
             whiteStatus.className = "white-info active-turn-text";
 
-            blackStatus.textContent = "Black Player";
+            // Show Black's total inventory below their name
+            blackStatus.innerHTML = `Black Player<br><span class="count-subtext">${otherTotalLeft} left</span>`;
             blackStatus.className = "black-info inactive-turn-text";
         }
 
@@ -453,10 +464,11 @@ function updatePlayerPanel() {
         capPreview.className = "piece capstone-piece white-piece";
     } else {
         if (!is_game_over) {
-            whiteStatus.textContent = "White Player";
+            // Show White's total inventory below their name
+            whiteStatus.innerHTML = `White Player<br><span class="count-subtext">${otherTotalLeft} left</span>`;
             whiteStatus.className = "white-info inactive-turn-text";
 
-            blackStatus.textContent = "Black's Turn";
+            blackStatus.innerHTML = "Black's Turn";
             blackStatus.className = "black-info active-turn-text";
         }
 
@@ -464,9 +476,6 @@ function updatePlayerPanel() {
         standingStonePreview.className = "piece standing-piece black-piece";
         capPreview.className = "piece capstone-piece black-piece";
     }
-
-    let remainingStones = Module._getPiecesLeft(current_turn, 0);
-    let remainingCapstones = Module._getPiecesLeft(current_turn, 1);
 
     document.getElementById("stone-count").textContent = remainingStones;
     document.getElementById("capstone-count").textContent = remainingCapstones;
