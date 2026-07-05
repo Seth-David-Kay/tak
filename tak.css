@@ -667,3 +667,85 @@ div.boardTile {
         height: 7vh;
     }
 }
+
+/* ==========================================================================
+   Dark Mode Theme System
+   ========================================================================== */
+
+/* Main Canvas & Global Typography Overrides */
+body.dark-theme {
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+}
+
+/* UI Panel & Interface Card Drops */
+body.dark-theme .settings-dropdown,
+body.dark-theme .modal-content {
+    background: #2a2a2a;
+    border-color: #f0f0f0;
+    color: #f0f0f0;
+}
+
+body.dark-theme .modal-title {
+    color: #f0f0f0;
+}
+
+/* Button Component Customization */
+body.dark-theme .btn {
+    background-color: #333333;
+    border-color: #f0f0f0;
+    color: #f0f0f0;
+}
+
+body.dark-theme .btn:hover {
+    background-color: #444444;
+}
+
+body.dark-theme .btn:active {
+    background-color: #555555;
+}
+
+/* Toggle Subsystem Swaps */
+body.dark-theme .toggle {
+    background: #333333;
+    border-color: #f0f0f0;
+}
+
+body.dark-theme .toggle-knob {
+    background: #f0f0f0;
+}
+
+body.dark-theme .toggle.active {
+    background: #5A8F54;
+}
+
+/* Difficulty Range Track Fixes */
+body.dark-theme .ui-slider {
+    background: #f0f0f0;
+}
+
+body.dark-theme .ui-slider::-webkit-slider-thumb {
+    background: #333333;
+    border-color: #f0f0f0;
+}
+
+body.dark-theme .ui-slider::-moz-range-thumb {
+    background: #333333;
+    border-color: #f0f0f0;
+}
+
+/* Turn Tracker Messaging Overrides */
+body.dark-theme .active-turn-text {
+    color: #ffffff;
+}
+
+body.dark-theme .inactive-turn-text {
+    color: #b5b5b5;
+}
+
+body.dark-theme #stone-selector,
+body.dark-theme #standing-stone-selector,
+body.dark-theme .capstones,
+body.dark-theme div.board {
+    border-color: #f0f0f0;
+}

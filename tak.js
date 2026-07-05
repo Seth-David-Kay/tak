@@ -23,13 +23,16 @@ const difficultySlider = document.getElementById("difficulty-slider");
 const difficultyValue = document.getElementById("difficulty-value");
 const modalNewGameBtn = document.getElementById("modal-new-game-btn");
 const modalCancelBtn = document.getElementById("modal-cancel-btn");
+const darkModeToggle = document.getElementById("dark-mode-toggle");
 export let botEnabled  = false;
 export let botColor = 1; // 0 is white (does first), 1 is black (goes second)
-renderSquares();
-updateBoard();
+loadSettings();
+const newSize = parseInt(boardSizeInput.value, 10) || 6;
+startNewGame(newSize);
 
 difficultySlider.addEventListener("input", () => {
     difficultyValue.textContent = difficultySlider.value;
+    saveSettings();
 });
 
 function renderSquares() {
@@ -414,6 +417,7 @@ newGameBtn.addEventListener('click', () => {
     }
     startNewGame(newSize);
     settingsDropdown.classList.remove('open');
+    saveSettings();
 });
 
 modalCancelBtn.addEventListener("pointerdown", () => {
@@ -458,13 +462,63 @@ botToggle.addEventListener('pointerdown', (e) => {
     e.stopPropagation();
     botEnabled = !botEnabled;
     botToggle.classList.toggle('active', botEnabled);
+    saveSettings();
 });
 
 botFirstToggle.addEventListener('pointerdown', (e) => {
     e.stopPropagation();
     botColor = botColor == 0 ? 1 : 0;
     botFirstToggle.classList.toggle('active', !botColor);
+    saveSettings();
 });
+
+darkModeToggle.addEventListener("pointerdown", (e) => {
+    e.stopPropagation();
+    const targetToggle = e.currentTarget;
+    targetToggle.classList.toggle("active");
+    document.body.classList.toggle("dark-theme");
+    saveSettings();
+});
+
+function saveSettings() {
+    const settings = {
+        boardSize: boardSizeInput.value,
+        botEnabled: botToggle.classList.contains("active"),
+        botFirst: botFirstToggle.classList.contains("active"),
+        difficulty: difficultySlider.value,
+        darkMode: darkModeToggle.classList.contains("active"),
+        boardSize: boardSizeInput.value
+    };
+
+    localStorage.setItem("tak_game_settings", JSON.stringify(settings));
+}
+
+function loadSettings() {
+    const savedData = localStorage.getItem("tak_game_settings");
+    if (!savedData) return;
+
+    try {
+        const settings = JSON.parse(savedData);
+        if (settings.boardSize) {
+            boardSizeInput.value = settings.boardSize;
+        }
+        if (settings.botEnabled !== undefined) {
+            botEnabled = settings.botEnabled;
+            botToggle.classList.toggle("active", botEnabled);
+        }
+        if (settings.botFirst !== undefined) {
+            botColor = settings.botFirst ? 0 : 1;
+            botFirstToggle.classList.toggle("active", settings.botFirst);
+        }
+        if (settings.difficulty !== undefined) {
+            difficultySlider.value = settings.difficulty;
+            if (difficultyValue) difficultyValue.textContent = settings.difficulty;
+        }
+        darkModeToggle.classList.toggle("active", settings.darkMode);
+        document.body.classList.toggle("dark-theme", settings.darkMode);
+    } catch (e) {
+    }
+}
 
 function updatePlayerPanel() {
     const whiteStatus = document.getElementById("white-status");
