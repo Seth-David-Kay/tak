@@ -468,7 +468,11 @@ div.boardTile {
 
 /* Mobile Specifics */
 @media (orientation: portrait) {
-    * {
+    body, .btn, .select-box, div.boardTile, .piece, .flat-piece,
+    .standing-piece, .capstone-piece,#stone-selector,
+    #standing-stone-selector, .capstones, .stones-wrapper,
+    .count-label,
+    div.board {
         touch-action: manipulation;
     }
     body {
