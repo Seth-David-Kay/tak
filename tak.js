@@ -69,13 +69,11 @@ function renderSquares() {
 function updateBoardLeftClick(board_tile) {
     let tileId = board_tile.id.split("-")[1];
     if (isTurnOver()) {
-        // highlight end turn in a pulsing red
         if (endTurnButton.classList.contains('pulse-red')) return;
         endTurnButton.classList.add('pulse-red');
         endTurnButton.addEventListener('animationend', () => {
             endTurnButton.classList.remove('pulse-red');
         }, { once: true });
-        // now just return
         return;
     }
     if (total_moves_taken < 2){
@@ -128,6 +126,7 @@ function updateBoardLeftClick(board_tile) {
             board_tile.classList.add("active_tile");
             active_tile = board_tile;
             Module._updateBoardLeftClick(tileId);
+            started_move = 1;
         }else if (Module._returnTileCount(tileId) == 0) {
             started_move = 1;
             Module._placeStone(tileId, current_turn, 0);
