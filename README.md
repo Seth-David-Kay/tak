@@ -29,11 +29,8 @@ A Tak implementation fully in C, compiled to WebAssembly, complete with a variab
 
 See ['Rules'](rules.md).
 
-```bash
-[example command]
-```
-
 ## Roadmap
+-
 
 ## License
 
