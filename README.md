@@ -27,7 +27,7 @@ A Tak implementation fully in C, compiled to WebAssembly, complete with a variab
 
 ## Rules
 
-See ['Rules'](rules.md).
+See [`Rules`](rules.md).
 
 ## Roadmap
 - [x] add piece count logic
